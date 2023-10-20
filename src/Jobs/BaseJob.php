@@ -63,6 +63,7 @@ class BaseJob implements ShouldQueue
             }
             $this->JobMessageModel = $JobMessageModel;
             if($JobMessageModel->status == JobMessageModel::STATUS_ED){
+                echo '该任务已完成，忽略处理:'.$JobMessageModel->_id.PHP_EOL;
                 return;
             }
             $JobMessageModel->ing();
