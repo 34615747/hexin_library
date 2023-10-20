@@ -8,9 +8,9 @@ class SoaClient
     public static function config()
     {
         return [
-            'aliexpress_system' => 'http://39.100.121.7/yar/soa/',
-            'alibaba_system' => 'http://39.100.121.7/yar/soa/',
-            'hx.jst.cc'=>'http://hx.jst.cc/yar/soa/',
+            'aliexpress_system' => '',
+            'alibaba_system' => '',
+            'hx.jst.cc'=>'',
         ];
     }
     /**
