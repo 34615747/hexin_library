@@ -15,30 +15,6 @@ class JobMessageModel extends Model
     const CREATED_AT = 'create_time';
     const UPDATED_AT = 'update_time';
 
-    /**
-     *
-     CREATE TABLE `order_job_message` (
-    `id` int NOT NULL AUTO_INCREMENT,
-    `merchant_id` int NOT NULL DEFAULT '0' COMMENT '商户id',
-    `platform_id` int NOT NULL DEFAULT '0' COMMENT '平台id',
-    `business_type` smallint NOT NULL DEFAULT '0' COMMENT '类型',
-    `business_type_name` varchar(64) NOT NULL DEFAULT '' COMMENT '类型名称',
-    `params` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '参数',
-    `is_now` tinyint(1) NOT NULL DEFAULT '2' COMMENT '是否马上执行队列,1是2否',
-    `fail_count` int NOT NULL DEFAULT '0' COMMENT '失败次数',
-    `is_retry` tinyint(1) NOT NULL DEFAULT '2' COMMENT '重跑次数',
-    `command_run_time` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT '定时任务的运行开始时间（延迟队列可用）',
-    `status` smallint NOT NULL DEFAULT '2' COMMENT '状态',
-    `status_name` varchar(64) NOT NULL DEFAULT '' COMMENT '状态名称',
-    `update_time` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
-    `create_time` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
-    `start_time` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT '开始时间',
-    `end_time` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT '结束时间',
-    `remark` varchar(255) NOT NULL DEFAULT '' COMMENT '备注',
-    PRIMARY KEY (`id`),
-    KEY `business_type` (`business_type`) USING BTREE
-    ) ENGINE=InnoDB AUTO_INCREMENT=15662 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-     */
     protected $fillable = [
         'id',
         'merchant_id',
