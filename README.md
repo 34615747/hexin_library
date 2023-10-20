@@ -98,9 +98,11 @@ class JobMessage extends Command
     {
         $JobMessageModel = new JobMessageModel();
         $query = $JobMessageModel->newQuery();
+        //待处理的任务
         $query->whereIn('status', [
             JobMessageModel::STATUS_WAIT
         ]);
+        //指定任务类型
         $query->whereIn('business_type',
             [
                 JobMessageModel::BUSINESS_TYPE_EXAMPLE
@@ -162,6 +164,7 @@ class FailJobMessage extends Command
      */
     public function handle()
     {
+    	//处理失败，可重试的任务
         $Query = JobMessageModel::where([
             ['status',JobMessageModel::STATUS_FAIL],
             ['is_retry',JobMessageModel::IS_YES]
