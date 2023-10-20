@@ -8,12 +8,12 @@
 安装：composer require hexin/library
 
 ## 一、Jobmessage 队列管理工具
-①.杜绝事务回滚，但队列又执行的bug
+**①.杜绝事务回滚，但队列又执行的bug
 ②.怕事务没提交，设置队列的延迟时间过长
-③.执行记录留痕
+③.执行记录留痕**
 
-JobMessageModel可继承，可重写
-#####1、创建表
+继承JobMessageModel，重写部分方法，比如insertJob等
+###1、创建表
 ```sql
      CREATE TABLE `job_message` (
           `id` int NOT NULL AUTO_INCREMENT,
@@ -37,7 +37,7 @@ JobMessageModel可继承，可重写
           KEY `business_type` (`business_type`) USING BTREE
      ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 ```
-#####2、插入队列
+###2、插入队列
 ```php
 <?php
 namespace App\Test;
@@ -59,7 +59,7 @@ class Test
 
 
 
-#####3、处理队列，定时任务每秒执行
+###3、处理队列，定时任务每秒执行
 ```php
 <?php
 namespace App\Console\Commands;
@@ -122,7 +122,7 @@ class JobMessage extends Command
 ```
 
 
-#####4、处理失败的队列，定时任务，每秒执行
+###4、处理失败的队列，定时任务，每秒执行
 ```php
 
 <?php
