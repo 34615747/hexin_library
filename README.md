@@ -8,6 +8,10 @@
 安装：composer require hexin/library
 
 ## 一、Jobmessage 队列管理工具
+①.杜绝事务回滚，但队列又执行的bug
+②.怕事务没提交，设置队列的延迟时间过长
+③.执行记录留痕
+
 JobMessageModel可继承，可重写
 #####1、创建表
 ```sql
