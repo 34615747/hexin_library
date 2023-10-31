@@ -83,11 +83,11 @@ class JobMessageModel extends Model
 
     public function viewBusinessType()
     {
-        return self::$businessTypeLabel[$this->business_type]??'';
+        return static::$businessTypeLabel[$this->business_type]??'';
     }
     public function viewStatus()
     {
-        return self::$statusLabel[$this->status]??'';
+        return static::$statusLabel[$this->status]??'';
     }
 
     //-----------------------------------------------------
@@ -115,10 +115,10 @@ class JobMessageModel extends Model
      */
     public function getMaxFailCount()
     {
-        $max_fail_count = self::MAX_FAIL_COUNT;
-        $jobDetail = self::jobDetail()[$this->business_type]??[];
+        $max_fail_count = static::MAX_FAIL_COUNT;
+        $jobDetail = static::jobDetail()[$this->business_type]??[];
         if($jobDetail){
-            $max_fail_count = $jobDetail['max_fail_count']??self::MAX_FAIL_COUNT;
+            $max_fail_count = $jobDetail['max_fail_count']??static::MAX_FAIL_COUNT;
         }
         return (int)$max_fail_count;
     }
@@ -183,10 +183,10 @@ class JobMessageModel extends Model
      */
     public static function insertMsg($merchant_id,$business_type,array $data,$is_now=2,$command_run_time='',$platform_id=0)
     {
-        if(!self::isCanUse($business_type,$merchant_id)){
+        if(!static::isCanUse($business_type,$merchant_id)){
             return;
         }
-        $JobMessageModel = new self();
+        $JobMessageModel = new static();
         $JobMessageModel->merchant_id = $merchant_id;
         $JobMessageModel->platform_id = $platform_id;
         $JobMessageModel->business_type = $business_type;

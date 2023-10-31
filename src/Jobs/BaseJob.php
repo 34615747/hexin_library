@@ -40,6 +40,15 @@ class BaseJob implements ShouldQueue
     }
 
     /**
+     * JobMessageModel名
+     * @return string
+     */
+    public static function getJobMessageModelName()
+    {
+        return JobMessageModel::class;
+    }
+
+    /**
      * 执行之前
      */
     public function handleBefore()
@@ -57,12 +66,13 @@ class BaseJob implements ShouldQueue
         try{
             $this->handleBefore();
             /**@var $JobMessageModel \Hexin\Library\Model\JobMessageModel*/
-            $JobMessageModel = JobMessageModel::find($this->job_message_id);
+            $JobMessageModelName = static::getJobMessageModelName();
+            $JobMessageModel = $JobMessageModelName::find($this->job_message_id);
             if(!$JobMessageModel){
                 throw new \Exception('任务不存在');
             }
             $this->JobMessageModel = $JobMessageModel;
-            if($JobMessageModel->status == JobMessageModel::STATUS_ED){
+            if($JobMessageModel->status == $JobMessageModelName::STATUS_ED){
                 echo '该任务已完成，忽略处理:'.$JobMessageModel->_id.PHP_EOL;
                 return;
             }
