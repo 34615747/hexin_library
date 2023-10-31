@@ -251,3 +251,77 @@ class Test
     }
 }
 ```
+
+## 四 审批流
+```php
+#### 审批配置 approval_process.php
+<?php
+
+return [
+    // 审批配置表
+    'approval_config_table_name' => 'hp_approval_config',
+    // 审批泳道(等级)表
+    'approval_level_table_name' => 'hp_approval_level',
+    // 审批节点设置表
+    'approval_process_table_name' => 'hp_approval_process',
+    // 审批人表
+    'approval_process_user_table_name' => 'hp_approval_process_user',
+
+    // 数据库连接名称，不填写则使用默认配置
+    'database_connection' => 'mysql',
+];
+
+
+<?php
+namespace App\Http\Repositories\Base;
+
+use App\Exceptions\ApiException;
+use App\Http\Repositories\BaseRepository;
+use App\Http\Repositories\Purchase\OrderApprovalRepository;
+use App\Http\Repositories\Purchase\OrderRepository;
+use App\Models\Approval\ApprovalConfigModel;
+use App\Models\Approval\ApprovalLevelModel;
+use App\Models\Approval\ApprovalProcessModel;
+use App\Models\Approval\ApprovalProcessUserModel;
+use App\Models\Discount\DiscountAccountStatementModel;
+use App\Models\Purchase\Order;
+use Illuminate\Support\Facades\Cache;
+// 审批流设置
+class ApprovalConfigRepository extends BaseRepository
+{
+    use \Hexin\Library\Traits\ApprovalConfigRepository;
+
+    const TYPE_PURCHASE = 1;
+    const TYPE_QC = 2;
+    const TYPE_DISCOUNT = 4;
+    const TYPE_SUPPLIER_RECONCILIATION = 3;
+
+    public $type = [
+        self::TYPE_PURCHASE => '采购审批流',
+        self::TYPE_QC => '质检审批流',
+        // 供应商对账审批流
+        self::TYPE_SUPPLIER_RECONCILIATION => '供应商对账审批流',
+        self::TYPE_DISCOUNT => '折扣单流水审批流',
+    ];
+    
+    // 重写 应用至所有待审批
+    public function applyToPending($data)
+    {
+        // 应用至所有待审批 todo
+        $order_list = (new Order())->where('status', OrderRepository::STATUS_SUBMIT)->get();
+
+        if (!$order_list->isEmpty()) {
+            foreach ($order_list as $item) {
+                $item->orderApproval()->delete();
+                try {
+                    // 创建订单审批流
+                    OrderApprovalRepository::createOrderApproval($item);
+                } catch (\Exception $e) {
+                    throw new ApiException([ApiException::DEFAULT_ERROR_CODE, $e->getMessage()]);
+                }
+            }
+        }
+    }
+}
+
+```
