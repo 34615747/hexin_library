@@ -2,8 +2,8 @@
 
 1. Jobmessage 队列管理工具
 2. redis锁
-3. 导出csv类
-4. 一些helper类型：数组、日期、请求、字符串
+3. 一些helper类型：数组、日期、请求、字符串、导出csv类
+4. 审批流
 
 安装：composer require hexin/library
 
@@ -252,7 +252,7 @@ class Test
 }
 ```
 
-## 四 审批流
+## 四、审批流
 ```php
 #### 审批配置 approval_process.php
 <?php
