@@ -219,7 +219,7 @@ class StringHelper
     }
 
     /**
-     * 获得base64图片
+     * 获得base64图片 
      * @param $url
      * @return string
      * @throws \Exception
