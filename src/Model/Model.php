@@ -36,6 +36,17 @@ class Model extends EloquentModel
         $this->{static::MERCHANT_ID} = config('constant.merchant_id');
     }
 
+    /**
+     * 获得显示的item_id
+     * @param $id
+     * @param string $prefix
+     * @param int $len
+     * @return string
+     */
+    public static function viewItemId($item_id,$prefix = 'PID',$len = 12)
+    {
+        return $prefix.str_pad($item_id,$len,'0',STR_PAD_LEFT);
+    }
 
 
 

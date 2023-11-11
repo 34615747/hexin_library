@@ -217,4 +217,32 @@ class StringHelper
         }
         return false;
     }
+
+    /**
+     * 获得base64图片
+     * @param $url
+     * @return string
+     * @throws \Exception
+     */
+    public static function getBase64($url)
+    {
+        if (!$url){
+            return '';
+        }
+        if (!preg_match("/^(http:\/\/|https:\/\/).*$/",$url)) {
+            return '';
+        }
+        $base64Code = '';
+        try {
+            $base64Code = base64_encode(file_get_contents($url));
+        }catch (\Throwable $exception){
+            throw new \Exception('无法获取图片信息:'.$url);
+        }
+
+        if (!$base64Code){
+            return '';
+        }
+        $extension = pathinfo($url,PATHINFO_EXTENSION);
+        return "data:image/{$extension};base64," . $base64Code;
+    }
 }
