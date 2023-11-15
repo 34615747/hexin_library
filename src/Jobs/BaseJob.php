@@ -96,7 +96,7 @@ class BaseJob implements ShouldQueue
             if($this->is_cli){
                 $this->failed($e);
             }
-            if($JobMessageModel->is_now){
+            if($JobMessageModel->is_now == 1){
                 throw new \Exception($e->getMessage());
             }
         }
