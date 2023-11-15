@@ -271,7 +271,7 @@ class JobMessageModel extends Model
     }
 
     /**
-     * 插入队列
+     * 插入队列 
      * //todo 重写
      */
     public function insertJob()
