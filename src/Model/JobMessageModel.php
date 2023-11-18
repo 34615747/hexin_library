@@ -193,7 +193,7 @@ class JobMessageModel extends Model
         $JobMessageModel->business_type_name = $JobMessageModel->viewBusinessType();
         $JobMessageModel->params = json_encode($data,JSON_UNESCAPED_UNICODE);
         $JobMessageModel->is_now = $is_now;
-        $JobMessageModel->command_run_time = $command_run_time == '' ? time() : $command_run_time;
+        $JobMessageModel->command_run_time = $command_run_time == '' ? date('Y-m-d H:i:s') : $command_run_time;
         $JobMessageModel->fail_count = 0;
         $JobMessageModel->is_retry = 1;
         $JobMessageModel->wait();
@@ -271,7 +271,7 @@ class JobMessageModel extends Model
     }
 
     /**
-     * 插入队列 
+     * 插入队列
      * //todo 重写
      */
     public function insertJob()
