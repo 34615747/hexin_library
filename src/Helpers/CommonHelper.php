@@ -33,4 +33,14 @@ class CommonHelper
         }
         return true;
     }
+
+    /**
+     * 获得用户信息
+     * User: lir 2020/4/22 11:06
+     * @return string
+     */
+    public static function getUserInfo()
+    {
+        return app('config')->get('userInfo');
+    }
 }
