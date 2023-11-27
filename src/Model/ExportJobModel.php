@@ -6,7 +6,7 @@ use Hexin\Library\Helpers\CommonHelper;
 
 class ExportJobModel extends Model
 {
-    protected $table = "hexin_erp_logistics_export";
+    protected $table = 'hexin_erp_logistics_export';
 
     /**
      * 是否是模型自己
@@ -70,17 +70,17 @@ class ExportJobModel extends Model
 
     public function viewHandlingStatusText()
     {
-        return self::HANDLING_STATUS[$this->handling_status]??'';
+        return static::HANDLING_STATUS[$this->handling_status] ?? '';
     }
 
     public function viewTypeText()
     {
-        return self::TYPE[$this->type]??'';
+        return static::TYPE[$this->type] ?? '';
     }
 
     public function viewStatusText()
     {
-        return self::STATUS[$this->status]??'';
+        return static::STATUS[$this->status] ?? '';
     }
 
     /**
@@ -93,26 +93,42 @@ class ExportJobModel extends Model
     }
 
     /**
-     * 创建导出记录
+     * 创建导出任务
      * @param $type
-     * @return mixed
+     * @param $file_name
+     * @param $condition
+     * @param $extra
+     * @return array
      * @throws \Exception
      */
-    public function createStorageExport($type,$file_name,$template_type='',$merchant_id=2){
-        try{
+    public function createExportJob($type, $file_name, $condition = null, $extra = [])
+    {
+        if (empty($type) || empty($file_name)) {
+            throw new \Exception('参数错误');
+        }
+        $merchant_id = $extra['merchant_id'] ?? 2;
+        $template_type = $extra['template_type'] ?? '';
+        $class_name = $extra['class_name'] ?? '';
+        $method = $extra['method'] ?? '';
+        $dir_name = $extra['dir_name'] ?? '';
+        try {
             $params = [
                 'merchant_id' => $merchant_id,
-                'create_uuid' => CommonHelper::getUserInfo()['member_uuid']??'',
-                'create_name' => CommonHelper::getUserInfo()['member_name']??'',
                 'file_name' => $file_name,
                 'download_addreee' => '',
-                'template_type' => $template_type,
+                'conditions' => !is_null($condition) ? json_encode($condition) : '',
                 'type' => $type,
+                'template_type' => $template_type,
                 'handling_status' => self::HANDLING_STATUS_WAIT,
+                'class_name' => $class_name,
+                'method' => $method,
+                'dir_name' => $dir_name,
+                'create_uuid' => CommonHelper::getUserInfo()['member_uuid'] ?? '',
+                'create_name' => CommonHelper::getUserInfo()['member_name'] ?? '',
             ];
-            if($this->is_self_model){
+            if ($this->is_self_model) {
                 $this->fill($params)->save();
-                return [];
+                return $this->id;
             }
             //载入config配置
             $method = self::rpcConfig(self::yarAddExpertConf());
@@ -120,7 +136,7 @@ class ExportJobModel extends Model
             $yarClient = new $yar_name($method);
             $res = $yarClient->call($params);
 
-        }catch (\Exception $e){
+        } catch (\Exception $e) {
             throw new \Exception($e->getMessage());
         }
         return [];
@@ -131,9 +147,10 @@ class ExportJobModel extends Model
      * @return mixed
      * @throws \Exception
      */
-    public function successToUpdateStorageExport(){
-        try{
-            if($this->is_self_model){
+    public function successToUpdateStorageExport()
+    {
+        try {
+            if ($this->is_self_model) {
                 $this->save();
                 return [];
             }
@@ -143,7 +160,7 @@ class ExportJobModel extends Model
             $yarClient = new $yar_name($method);
             $res = $yarClient->call($this->toArray());
 
-        }catch (\Exception $e){
+        } catch (\Exception $e) {
             throw new \Exception($e->getMessage());
         }
         return [];
@@ -154,9 +171,10 @@ class ExportJobModel extends Model
      * @return mixed
      * @throws \Exception
      */
-    public function failToUpdateStorageExport(){
-        try{
-            if($this->is_self_model){
+    public function failToUpdateStorageExport()
+    {
+        try {
+            if ($this->is_self_model) {
                 $this->save();
                 return [];
             }
@@ -166,7 +184,7 @@ class ExportJobModel extends Model
             $yarClient = new $yar_name($method);
             $res = $yarClient->call($this->toArray());
 
-        }catch (\Exception $e){
+        } catch (\Exception $e) {
             throw new \Exception($e->getMessage());
         }
         return [];
@@ -181,7 +199,7 @@ class ExportJobModel extends Model
     {
         $method = array_keys($conf)[0];
         $value = array_values($conf)[0];
-        app('config')->set([('yar-map.'.$method)=>$value]);
+        app('config')->set([('yar-map.' . $method) => $value]);
         return $method;
     }
 
@@ -192,12 +210,12 @@ class ExportJobModel extends Model
     public static function yarAddExpertConf()
     {
         return [
-            'composer_storage_expert_list_services_create_export'=>[
-                'module'           => 'storage',
-                'service'          => 'ExpertListServices',
-                'method'           => 'addExpert',
-                'connect_timeout'  => 60000,
-                'read_timeout'     => 60000,
+            'composer_storage_expert_list_services_create_export' => [
+                'module' => 'storage',
+                'service' => 'ExpertListServices',
+                'method' => 'addExpert',
+                'connect_timeout' => 60000,
+                'read_timeout' => 60000,
             ]
         ];
     }
@@ -209,12 +227,12 @@ class ExportJobModel extends Model
     public static function yarUpdateExpertConf()
     {
         return [
-            'composer_storage_expert_list_services_update_export'=>[
-                'module'           => 'storage',
-                'service'          => 'ExpertListServices',
-                'method'           => 'updateExpert',
-                'connect_timeout'  => 60000,
-                'read_timeout'     => 60000,
+            'composer_storage_expert_list_services_update_export' => [
+                'module' => 'storage',
+                'service' => 'ExpertListServices',
+                'method' => 'updateExpert',
+                'connect_timeout' => 60000,
+                'read_timeout' => 60000,
             ]
         ];
     }
