@@ -6,6 +6,8 @@ abstract class FileImportTaskModel extends Model
 {
     public $table = 'file_import_task';
 
+    protected $guarded = [];
+
     /**
      * 处理状态 1 待处理 20校验数据中 21数据校验失败 22数据校验通过 30等待数据导入，31 数据导入中 32 部分数据导入 33数据导入完成 34导入失败 40 业务处理中  41部分完成 42已完成
      */

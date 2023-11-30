@@ -1,17 +1,10 @@
 <?php
 namespace Hexin\Library\Model;
 
-use App\Http\Repositories\BaseRepository;
-use App\Scopes\MerchantIdScope;
-use Faker\Provider\Base;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
-use LinLancer\Laravel\EloquentModel;
+use Illuminate\Database\Eloquent\Model as LaravelModel;
 
 
-class Model extends EloquentModel
+class Model extends LaravelModel
 {
     const TRUE = 1;
     const FALSE = 2;

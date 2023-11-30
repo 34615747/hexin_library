@@ -4,6 +4,8 @@
 2. redis锁
 3. 一些helper类型：数组、日期、请求、字符串、导出csv类
 4. 审批流
+5. 导出xls类
+6. 文件导入任务
 
 安装：composer require hexin/library
 
@@ -395,4 +397,39 @@ class Test
         return response()->download($filePath, $file_name, $headers = ['Content-Type' => 'application/vnd.ms-excel;charset=utf-8']);
     }
 }
+```
+## 六、文件导入
+
+###1、创建表
+```sql
+CREATE TABLE `file_import_task` (
+    `id` int unsigned NOT NULL AUTO_INCREMENT,
+    `handle_status` tinyint unsigned NOT NULL DEFAULT '1' COMMENT '1 待处理 20校验数据中 21数据校验失败 22数据校验通过 30等待数据导入，31 数据导入中 32 部分数据导入 33数据导入完成 34导入失败 40 业务处理中  41部分完成 42已完成',
+    `business_type` int NOT NULL COMMENT '业务类型',
+    `original_file_name` varchar(100) NOT NULL COMMENT '原文件名',
+    `fail_msg` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '错误原因',
+    `merchant_id` int unsigned NOT NULL COMMENT '商户id',
+    `admin_uuid` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '' COMMENT '操作人uuid',
+    `admin_name` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '' COMMENT '操作人',
+    `update_time` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT '数据更新时间',
+    `create_time` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT '数据添加时间',
+    `save_file_path` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '' COMMENT '保存文件完整路径',
+    `save_file_name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '' COMMENT '保存的文件名',
+    `read_total_rows` int NOT NULL COMMENT '代码获取到的行数 不一定是真正有效的行数 ',
+    `file_size` int unsigned NOT NULL COMMENT '文件大小 bytes',
+    `import_start_time` int unsigned NOT NULL DEFAULT '0' COMMENT '导入开始时间',
+    `import_end_time` int unsigned NOT NULL DEFAULT '0' COMMENT '导入结束时间',
+    `server_local_path` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '' COMMENT '服务器本地路径',
+    `related_condition1` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '关联条件1 根据各自业务去存',
+    `related_condition2` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '关联条件2 根据各自业务去存',
+    `related_condition3` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '关联条件3 根据各自业务去存',
+    `remark` varchar(255) NOT NULL COMMENT '备注',
+    `success_num` int NOT NULL COMMENT '成功数量',
+    `fail_num` int NOT NULL COMMENT '失败数量',
+    `total_nums` int NOT NULL COMMENT '总数量',
+    `data_start_time` int NOT NULL COMMENT '数据开始时间',
+    `data_end_time` int NOT NULL COMMENT '数据结束时间',
+    PRIMARY KEY (`id`) USING BTREE,
+    KEY `handle_status` (`business_type`,`handle_status`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='文件导入任务';
 ```

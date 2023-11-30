@@ -1,7 +1,6 @@
 <?php
 namespace Hexin\Library\Model;
 
-use Illuminate\Database\Eloquent\Model;
 use Hexin\Library\Jobs\ExampleJob;
 
 /**
@@ -11,9 +10,6 @@ use Hexin\Library\Jobs\ExampleJob;
 class JobMessageModel extends Model
 {
     public $table = 'job_message';
-
-    const CREATED_AT = 'create_time';
-    const UPDATED_AT = 'update_time';
 
     protected $fillable = [
         'id',
