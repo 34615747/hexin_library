@@ -72,6 +72,10 @@ class BaseJob implements ShouldQueue
                 throw new \Exception('任务不存在');
             }
             $this->JobMessageModel = $JobMessageModel;
+            if($JobMessageModel->is_retry == 2){
+                echo '该任务不允许重试，忽略处理:'.$JobMessageModel->_id.PHP_EOL;
+                return;
+            }
             if($JobMessageModel->status == $JobMessageModelName::STATUS_ED){
                 echo '该任务已完成，忽略处理:'.$JobMessageModel->_id.PHP_EOL;
                 return;
@@ -81,9 +85,9 @@ class BaseJob implements ShouldQueue
                 echo '开始:'.$JobMessageModel->_id.PHP_EOL;
             }
 
-            $this->runBody();
+            $res = $this->runBody();
 
-            $JobMessageModel->succ();
+            $JobMessageModel->succ($res);
             if($this->is_cli){
                 echo '已处理'.PHP_EOL;
             }
@@ -118,7 +122,7 @@ class BaseJob implements ShouldQueue
     public function runBody()
     {
         //todo 子类编写
-        return;
+        return '';
     }
 
 

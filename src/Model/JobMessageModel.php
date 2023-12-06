@@ -229,7 +229,10 @@ class JobMessageModel extends Model
      */
     public function succ($remark='')
     {
-        $this->remark = $remark;
+        if(is_array($remark)){
+            $remark = json_encode($remark,JSON_UNESCAPED_UNICODE);
+        }
+        $this->remark = $remark??'';
         $this->status = self::STATUS_ED;
         $this->status_name = $this->viewStatus();
         $this->end_time = date('Y-m-d H:i:s');
