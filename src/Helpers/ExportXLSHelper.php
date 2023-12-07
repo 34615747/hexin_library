@@ -2,8 +2,6 @@
 namespace Hexin\Library\Helpers;
 // 需安装扩展包 https://pecl.php.net/package/xlswriter
 use Vtiful\Kernel\Excel;
-use function Hexin\Library\Export\env;
-use function Hexin\Library\Export\storage_path;
 
 /**
  * Excel导出 逐行写入数据
