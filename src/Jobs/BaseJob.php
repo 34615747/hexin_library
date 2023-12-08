@@ -76,7 +76,7 @@ class BaseJob implements ShouldQueue
                 echo '请选择队列中的队列:'.$JobMessageModel->_id.PHP_EOL;
                 return;
             }
-//            if($JobMessageModel->is_retry == 2){
+//            if($JobMessageModel->is_retry == 2){ 
 //                echo '该任务不允许重试，忽略处理:'.$JobMessageModel->_id.PHP_EOL;
 //                return;
 //            }
