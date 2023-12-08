@@ -57,6 +57,8 @@ trait JobMessageCommand
 
     public function traitHandleJob($JobMessageModel)
     {
+        $JobMessageModel->status = JobMessageModel::STATUS_JOB;
+        $JobMessageModel->save();
         $JobMessageModel->insertJob($JobMessageModel);
     }
 

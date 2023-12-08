@@ -72,14 +72,18 @@ class BaseJob implements ShouldQueue
                 throw new \Exception('任务不存在');
             }
             $this->JobMessageModel = $JobMessageModel;
-            if($JobMessageModel->is_retry == 2){
-                echo '该任务不允许重试，忽略处理:'.$JobMessageModel->_id.PHP_EOL;
+            if($JobMessageModel->status != $JobMessageModelName::STATUS_JOB){
+                echo '请选择队列中的队列:'.$JobMessageModel->_id.PHP_EOL;
                 return;
             }
-            if($JobMessageModel->status == $JobMessageModelName::STATUS_ED){
-                echo '该任务已完成，忽略处理:'.$JobMessageModel->_id.PHP_EOL;
-                return;
-            }
+//            if($JobMessageModel->is_retry == 2){
+//                echo '该任务不允许重试，忽略处理:'.$JobMessageModel->_id.PHP_EOL;
+//                return;
+//            }
+//            if($JobMessageModel->status == $JobMessageModelName::STATUS_ED){
+//                echo '该任务已完成，忽略处理:'.$JobMessageModel->_id.PHP_EOL;
+//                return;
+//            }
             $JobMessageModel->ing();
             if($this->is_cli){
                 echo '开始:'.$JobMessageModel->_id.PHP_EOL;
