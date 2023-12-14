@@ -71,25 +71,11 @@ class ViewAuthHelper
         }
         $res = Cache::store('redis_common')->get('hexin_site:auth:view:'.$uuid);
         if(!$res){
-            //todo rpc获取
-            $res = '';
+            $res = YarHelper::call(['uuid'=>$uuid],YarHelper::yarGetViewAuthConf());
         }
         $res = explode(',',$res);
         self::$auths = $res;
         return $res;
-    }
-
-    /**
-     * 显示财务成本价
-     * User: lir 2020/12/25 11:19
-     * @return array
-     */
-    public static function viewFinanceCostAmount($amount,$hide='***',$uuid='')
-    {
-        if(self::isFinanceCostAuth($uuid)){
-            return $amount;
-        }
-        return $hide;
     }
 
     /**
@@ -104,6 +90,19 @@ class ViewAuthHelper
             return true;
         }
         return false;
+    }
+
+    /**
+     * 显示财务成本价
+     * User: lir 2020/12/25 11:19
+     * @return array
+     */
+    public static function viewFinanceCostAmount($amount,$hide='***',$uuid='')
+    {
+        if(self::isFinanceCostAuth($uuid)){
+            return $amount;
+        }
+        return $hide;
     }
 
 
