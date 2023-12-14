@@ -32,7 +32,7 @@ class YarHelper
         $yar_name = self::yarClassName();
 
         $yarClient = new $yar_name($method);
-        $res = $yarClient->call($params);
+        return $yarClient->call($params);
     }
 
     /**
