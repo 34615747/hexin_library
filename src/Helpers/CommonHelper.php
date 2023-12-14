@@ -43,4 +43,27 @@ class CommonHelper
     {
         return app('config')->get('userInfo');
     }
+
+    /**
+     * 获得uuid
+     * User: lir 2020/4/22 11:06
+     * @return string
+     */
+    public static function getUUid()
+    {
+        $userInfo = self::getUserInfo();
+        return $userInfo['member_uuid']??'';
+    }
+
+    /**
+     * 获得用户名
+     * User: lir 2020/4/22 11:06
+     * @return string
+     */
+    public static function getUserName()
+    {
+        $userInfo = self::getUserInfo();
+        return $userInfo['member_name']??'';
+    }
+
 }
