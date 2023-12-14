@@ -80,6 +80,19 @@ class ViewAuthHelper
     }
 
     /**
+     * 显示财务成本价
+     * User: lir 2020/12/25 11:19
+     * @return array
+     */
+    public static function viewFinanceCostAmount($amount,$hide='***',$uuid='')
+    {
+        if(self::isFinanceCostAuth($uuid)){
+            return $amount;
+        }
+        return $hide;
+    }
+
+    /**
      * 是否含有财务成本权限
      * User: lir 2020/12/25 11:19
      * @return array
@@ -91,19 +104,6 @@ class ViewAuthHelper
             return true;
         }
         return false;
-    }
-
-    /**
-     * 显示财务成本价
-     * User: lir 2020/12/25 11:19
-     * @return array
-     */
-    public static function viewFinanceCostAmount($amount,$hide='***',$uuid='')
-    {
-        if(self::isFinanceCostAuth($uuid)){
-            return $amount;
-        }
-        return $hide;
     }
 
 
