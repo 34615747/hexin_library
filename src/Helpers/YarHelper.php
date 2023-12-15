@@ -32,7 +32,12 @@ class YarHelper
         $yar_name = self::yarClassName();
 
         $yarClient = new $yar_name($method);
-        return $yarClient->call($params);
+        try {
+            return $yarClient->call($params);
+        }catch (\Exception $e){
+            throw new \Exception('YarHelper:'.$e->getMessage());
+        }
+
     }
 
     /**

@@ -67,7 +67,7 @@ class ViewAuthHelper
             $uuid = CommonHelper::getUUid();
         }
         if(!$uuid){
-            throw new \Exception('人员uuid不能为空');
+            throw new \Exception('ViewAuthHelper:人员uuid不能为空');
         }
         $res = Cache::store('redis_common')->get('hexin_site:auth:view:'.$uuid);
         if(!$res){
@@ -79,17 +79,160 @@ class ViewAuthHelper
     }
 
     /**
-     * 是否含有财务成本权限
+     * 是否含有权限
      * User: lir 2020/12/25 11:19
      * @return array
      */
-    public static function isFinanceCostAuth($uuid='')
+    public static function isAuth($view_id,$uuid='')
     {
         $auths = self::getAuths($uuid);
-        if(in_array(self::VIEW_FINANCE_COST,$auths)){
+        if(in_array($view_id,$auths)){
             return true;
         }
         return false;
+    }
+
+    /**
+     * 显示供应商名称
+     * User: lir 2020/12/25 11:19
+     * @return array
+     */
+    public static function viewSupplierName($str,$hide='***',$uuid='')
+    {
+        if(self::isAuth(self::VIEW_SUPPLIER_NAME,$uuid)){
+            return $str;
+        }
+        return $hide;
+    }
+
+    /**
+     * 显示旺旺
+     * User: lir 2020/12/25 11:19
+     * @return array
+     */
+    public static function viewSupplierWangwang($str,$hide='***',$uuid='')
+    {
+        if(self::isAuth(self::VIEW_SUPPLIER_WANGWANG,$uuid)){
+            return $str;
+        }
+        return $hide;
+    }
+
+    /**
+     * 显示店铺地址
+     * User: lir 2020/12/25 11:19
+     * @return array
+     */
+    public static function viewSupplierStoreAddr($str,$hide='***',$uuid='')
+    {
+        if(self::isAuth(self::VIEW_SUPPLIER_STORE_ADDR,$uuid)){
+            return $str;
+        }
+        return $hide;
+    }
+
+    /**
+     * 显示开发价
+     * User: lir 2020/12/25 11:19
+     * @return array
+     */
+    public static function viewPurchaseDevelopmentPrice($str,$hide='***',$uuid='')
+    {
+        if(self::isAuth(self::VIEW_PURCHASE_DEVELOPMENT_PRICE,$uuid)){
+            return $str;
+        }
+        return $hide;
+    }
+
+    /**
+     * 显示价格区间
+     * User: lir 2020/12/25 11:19
+     * @return array
+     */
+    public static function viewPurchasePriceBetween($str,$hide='***',$uuid='')
+    {
+        if(self::isAuth(self::VIEW_PURCHASE_PRICE_BETWEEN,$uuid)){
+            return $str;
+        }
+        return $hide;
+    }
+
+    /**
+     * 显示运费
+     * User: lir 2020/12/25 11:19
+     * @return array
+     */
+    public static function viewPurchaseFreight($str,$hide='***',$uuid='')
+    {
+        if(self::isAuth(self::VIEW_PURCHASE_FREIGHT,$uuid)){
+            return $str;
+        }
+        return $hide;
+    }
+
+    /**
+     * 显示优惠
+     * User: lir 2020/12/25 11:19
+     * @return array
+     */
+    public static function viewPurchasePreferential($str,$hide='***',$uuid='')
+    {
+        if(self::isAuth(self::VIEW_PURCHASE_PREFERENTIAL,$uuid)){
+            return $str;
+        }
+        return $hide;
+    }
+
+    /**
+     * 显示商品链接
+     * User: lir 2020/12/25 11:19
+     * @return array
+     */
+    public static function viewGoodsUrl($str,$hide='***',$uuid='')
+    {
+        if(self::isAuth(self::VIEW_GOODS_URL,$uuid)){
+            return $str;
+        }
+        return $hide;
+    }
+
+    /**
+     * 显示开发价
+     * User: lir 2020/12/25 11:19
+     * @return array
+     */
+    public static function viewGoodsDevelopmentPrice($str,$hide='***',$uuid='')
+    {
+        if(self::isAuth(self::VIEW_GOODS_DEVELOPMENT_PRICE,$uuid)){
+            return $str;
+        }
+        return $hide;
+    }
+
+    /**
+     * 显示最新采购价
+     * User: lir 2020/12/25 11:19
+     * @return array
+     */
+    public static function viewGoodsPurchasePrice($str,$hide='***',$uuid='')
+    {
+        if(self::isAuth(self::VIEW_GOODS_PURCHASE_PRICE,$uuid)){
+            return $str;
+        }
+        return $hide;
+    }
+
+    /**
+     * 显示金额相关
+     * User: lir 2020/12/25 11:19
+     * @return array
+     */
+    public static function viewPurchaseAboutAmount($str,$hide='***',$uuid='')
+    {
+        if(self::isAuth(self::VIEW_PURCHASE_ABOUT_AMOUNT,$uuid)){
+            return $str;
+        }
+        return $hide;
     }
 
     /**
@@ -97,13 +240,11 @@ class ViewAuthHelper
      * User: lir 2020/12/25 11:19
      * @return array
      */
-    public static function viewFinanceCostAmount($amount,$hide='***',$uuid='')
+    public static function viewFinanceCostAmount($str,$hide='***',$uuid='')
     {
-        if(self::isFinanceCostAuth($uuid)){
-            return $amount;
+        if(self::isAuth(self::VIEW_FINANCE_COST,$uuid)){
+            return $str;
         }
         return $hide;
     }
-
-
 }
