@@ -52,7 +52,11 @@ class CommonHelper
     public static function getUUid()
     {
         $userInfo = self::getUserInfo();
-        return $userInfo['member_uuid']??'';
+        $uuid = $userInfo['member_uuid']??'';
+        if(!$uuid){
+            $uuid = $userInfo['uuid']??'';
+        }
+        return $uuid;
     }
 
     /**
@@ -63,7 +67,11 @@ class CommonHelper
     public static function getUserName()
     {
         $userInfo = self::getUserInfo();
-        return $userInfo['member_name']??'';
+        $name = $userInfo['member_name']??'';
+        if(!$name){
+            $name = $userInfo['name']??'';
+        }
+        return $name;
     }
 
 }
