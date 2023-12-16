@@ -69,7 +69,7 @@ class ViewAuthHelper
             $uuid = CommonHelper::getUUid();
         }
         if(!$uuid){
-            throw new \Exception('ViewAuthHelper:人员uuid不能为空');
+            return [];
         }
         $res = Cache::store('redis_common')->get('hexin_site:auth:view:'.$uuid);
         if(!$res){
