@@ -115,8 +115,8 @@ class ExportJobModel extends Model
                 'class_name' => $class_name,
                 'method' => $method,
                 'dir_name' => $dir_name,
-                'create_uuid' => CommonHelper::getUserInfo()['member_uuid'] ?? '',
-                'create_name' => CommonHelper::getUserInfo()['member_name'] ?? '',
+                'create_uuid' => CommonHelper::getUUid(),
+                'create_name' => CommonHelper::getUserName(),
             ];
             if ($this->is_self_model) {
                 $this->fill($params)->save();
