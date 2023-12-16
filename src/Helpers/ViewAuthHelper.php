@@ -69,7 +69,7 @@ class ViewAuthHelper
             $uuid = CommonHelper::getUUid();
         }
         if(!$uuid){
-            return [];
+            return array_keys(self::$viewLabel);
         }
         $res = Cache::store('redis_common')->get('hexin_site:auth:view:'.$uuid);
         if(!$res){
