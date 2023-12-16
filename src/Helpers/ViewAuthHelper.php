@@ -28,6 +28,7 @@ class ViewAuthHelper
     const VIEW_GOODS_DEVELOPMENT_PRICE = 12;//开发价
     const VIEW_GOODS_PURCHASE_PRICE = 13;//最新采购价
     const VIEW_PURCHASE_ABOUT_AMOUNT = 15;//金额相关
+    const VIEW_GOODS_INTERCOMPANY_PRICE = 16;//公司间定价
     const VIEW_FINANCE_COST = 17;//财务成本
     public static $viewLabel = [
         self::VIEW_SUPPLIER_NAME => '供应商名称',
@@ -44,6 +45,7 @@ class ViewAuthHelper
         self::VIEW_GOODS_DEVELOPMENT_PRICE => '开发价',
         self::VIEW_GOODS_PURCHASE_PRICE => '最新采购价',
         self::VIEW_PURCHASE_ABOUT_AMOUNT => '金额相关',
+        self::VIEW_GOODS_INTERCOMPANY_PRICE => '公司间定价',
         self::VIEW_FINANCE_COST => '财务成本',
     ];
 
@@ -71,7 +73,9 @@ class ViewAuthHelper
         }
         $res = Cache::store('redis_common')->get('hexin_site:auth:view:'.$uuid);
         if(!$res){
-            $res = YarHelper::call(['uuid'=>$uuid],YarHelper::yarGetViewAuthConf());
+            $res = '';
+            //没设置，所以是空
+//            $res = YarHelper::call(['uuid'=>$uuid],YarHelper::yarGetViewAuthConf());
         }
         $res = explode(',',$res);
         self::$auths = $res;
@@ -230,6 +234,19 @@ class ViewAuthHelper
     public static function viewPurchaseAboutAmount($str,$hide='***',$uuid='')
     {
         if(self::isAuth(self::VIEW_PURCHASE_ABOUT_AMOUNT,$uuid)){
+            return $str;
+        }
+        return $hide;
+    }
+
+    /**
+     * 显示公司间定价
+     * User: lir 2020/12/25 11:19
+     * @return array
+     */
+    public static function viewGoodsIntercompanyPrice($str,$hide='***',$uuid='')
+    {
+        if(self::isAuth(self::VIEW_GOODS_INTERCOMPANY_PRICE,$uuid)){
             return $str;
         }
         return $hide;
