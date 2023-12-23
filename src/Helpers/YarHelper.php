@@ -73,6 +73,23 @@ class YarHelper
     }
 
     /**
+     * yar获得导出列表配置
+     * @return array[]
+     */
+    public static function yarGetExpertListsConf()
+    {
+        return [
+            'composer_storage_ExpertListServices_getExpertLists' => [
+                'module' => 'storage',
+                'service' => 'ExpertListServices',
+                'method' => 'getExpertLists',
+                'connect_timeout' => 60000,
+                'read_timeout' => 60000,
+            ]
+        ];
+    }
+
+    /**
      * yar更新导出配置
      * @return array[]
      */

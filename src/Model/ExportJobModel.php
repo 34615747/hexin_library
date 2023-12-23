@@ -9,12 +9,6 @@ class ExportJobModel extends Model
 {
     protected $table = 'hexin_erp_logistics_export';
 
-    /**
-     * 是否是模型自己
-     * 是则save，否则rpc
-     * @var bool
-     */
-    public $is_self_model = false;
 
     protected $fillable = [
         'merchant_id',
@@ -74,14 +68,36 @@ class ExportJobModel extends Model
         return static::HANDLING_STATUS[$this->handling_status] ?? '';
     }
 
-    public function viewTypeText()
+    public static function viewTypeText($type)
     {
-        return static::TYPE[$this->type] ?? '';
+        return static::TYPE[$type] ?? '';
     }
 
     public function viewStatusText()
     {
         return static::STATUS[$this->status] ?? '';
+    }
+
+    /**
+     * 获得导出记录
+     * @return mixed
+     * @throws \Exception
+     */
+    public static function getStorageExport($params,$ExportJobModelClassName='')
+    {
+        try {
+            if ($ExportJobModelClassName) {
+                return $ExportJobModelClassName::selectRaw($params['field'] ?? '*')
+                    ->whereRaw($params['where'])
+                    ->get()
+                    ->toArray();
+            }
+            $res = YarHelper::call($params,YarHelper::yarGetExpertListsConf());
+
+        } catch (\Exception $e) {
+            throw new \Exception($e->getMessage());
+        }
+        return $res;
     }
 
     /**
@@ -93,7 +109,7 @@ class ExportJobModel extends Model
      * @return array
      * @throws \Exception
      */
-    public function createExportJob($type, $file_name, $condition = null, $extra = [])
+    public static function createExportJob($type, $file_name, $condition = null, $extra = [],$ExportJobModelClassName='')
     {
         if (empty($type) || empty($file_name)) {
             throw new \Exception('参数错误');
@@ -118,16 +134,18 @@ class ExportJobModel extends Model
                 'create_uuid' => CommonHelper::getUUid(),
                 'create_name' => CommonHelper::getUserName(),
             ];
-            if ($this->is_self_model) {
-                $this->fill($params)->save();
-                return $this->id;
+            if ($ExportJobModelClassName) {
+                $model = new self();
+                $model->fill($params);
+                $model->save();
+                return $model->toArray();
             }
-            $res = YarHelper::call($this->toArray(),YarHelper::yarAddExpertConf());
+            $res = YarHelper::call($params,YarHelper::yarAddExpertConf());
 
         } catch (\Exception $e) {
             throw new \Exception($e->getMessage());
         }
-        return [];
+        return $res;
     }
 
     /**
@@ -135,14 +153,16 @@ class ExportJobModel extends Model
      * @return mixed
      * @throws \Exception
      */
-    public function successToUpdateStorageExport()
+    public static function successToUpdateStorageExport($ExportJob,$ExportJobModelClassName='')
     {
         try {
-            if ($this->is_self_model) {
-                $this->save();
+            if ($ExportJobModelClassName) {
+                $model = $ExportJobModelClassName::findOrFail($ExportJob['id']);
+                $model->fill($ExportJob);
+                $model->save();
                 return [];
             }
-            $res = YarHelper::call($this->toArray(),YarHelper::yarUpdateExpertConf());
+            $res = YarHelper::call($ExportJob,YarHelper::yarUpdateExpertConf());
 
         } catch (\Exception $e) {
             throw new \Exception($e->getMessage());
@@ -155,14 +175,16 @@ class ExportJobModel extends Model
      * @return mixed
      * @throws \Exception
      */
-    public function failToUpdateStorageExport()
+    public static function failToUpdateStorageExport($ExportJob,$ExportJobModelClassName='')
     {
         try {
-            if ($this->is_self_model) {
-                $this->save();
+            if ($ExportJobModelClassName) {
+                $model = $ExportJobModelClassName::findOrFail($ExportJob['id']);
+                $model->fill($ExportJob);
+                $model->save();
                 return [];
             }
-            $res = YarHelper::call($this->toArray(),YarHelper::yarUpdateExpertConf());
+            $res = YarHelper::call($ExportJob,YarHelper::yarUpdateExpertConf());
 
         } catch (\Exception $e) {
             throw new \Exception($e->getMessage());
