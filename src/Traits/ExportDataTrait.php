@@ -20,7 +20,12 @@ trait ExportDataTrait
         echo '开始导出，数量:' . count($ExportJobs) . PHP_EOL;
         foreach ($ExportJobs as $ExportJob) {
             /**@var $ExportJob \Hexin\Library\Model\ExportJobModel */
-            echo '导出：' . ExportJobModel::viewTypeText($ExportJob['type']) . PHP_EOL;
+            $userInfo = [
+                'uuid'=>$ExportJob['create_uuid'],
+                'name'=>$ExportJob['create_name'],
+            ];
+            CommonHelper::setUserInfo($userInfo);
+            echo $ExportJob['create_name'].'====》导出：【' . ExportJobModel::viewTypeText($ExportJob['type']).'】'.$ExportJob['file_name'] . PHP_EOL;
             try {
                 $file_name = $ExportJob['file_name'];
                 if (empty($file_name)) {

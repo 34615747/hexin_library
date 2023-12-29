@@ -35,6 +35,16 @@ class CommonHelper
     }
 
     /**
+     * 设置用户信息
+     * User: lir 2020/4/22 11:06
+     * @return string
+     */
+    public static function setUserInfo($userInfo)
+    {
+        return app('config')->set(['userInfo'=>$userInfo]);
+    }
+
+    /**
      * 获得用户信息
      * User: lir 2020/4/22 11:06
      * @return string
