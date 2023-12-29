@@ -9,7 +9,7 @@ trait ExportDataTrait
 {
 
     /**
-     * Execute the console command.
+     * Execute the console command. 
      * $ExportJobs 任务队列
      * $ExportJobModelClassName 任务模型，无则走rpc更新队列数据
      * @return mixed
