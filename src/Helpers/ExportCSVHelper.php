@@ -36,25 +36,23 @@ class ExportCSVHelper
         if(!$array){
             return;
         }
-        $str =  "";
-        foreach ($array as $key=>$item){
-            $item = StringHelper::trimStr(($item));
-            if (stripos($item, ",") !== false) { //检查是不是包含逗号 如果包含逗号 用""包着 就会被当作字符串处理了
-                $item = '"' . $item . '"';
-            }
-            if($is_t){
-                $item = $item."\t";
-            }
-            $str .= $item.",";
+        $this->fputCsv($array);
+    }
+
+    /**
+     * 写入文件
+     * User: lir 2021/2/26 15:56
+     * @param array $array
+     */
+    public function fputCsv(array $fields)
+    {
+        if(!$fields){
+            return;
         }
-        $encode = mb_detect_encoding($str, ['ASCII','GB2312','GBK','UTF-8']);
-        !$encode && $encode = 'GBK';
-        //mb_convert_variables('GBK', 'UTF-8', $str);
-//        if(!in_array($encode,['CP936'])){
-//            mb_convert_variables('UTF-8', $encode, $str);
-//        }
-        $str .= PHP_EOL;
-        fwrite($this->fileHandle, $str);
+        foreach ($fields as &$field) {
+            mb_convert_variables('GBK', 'UTF-8', $field);
+        }
+        fputcsv($this->fileHandle, $fields);
     }
 
     /**
