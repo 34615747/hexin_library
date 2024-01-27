@@ -6,6 +6,7 @@
 4. 审批流
 5. 导出xls类
 6. 文件导入任务
+7. 导出任务
 
 安装：composer require hexin/library
 
@@ -213,7 +214,7 @@ class Test
         }
         try{
             DB::beginTransaction();
-          
+            //业务代码
             DB::commit();
         }catch (\Exception $e){
             DB::rollBack();
@@ -432,4 +433,154 @@ CREATE TABLE `file_import_task` (
     PRIMARY KEY (`id`) USING BTREE,
     KEY `handle_status` (`business_type`,`handle_status`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='文件导入任务';
+```
+## 七、导出任务
+
+###1、配置yar-services.php,新增'ExpertListServices'
+```php
+return [
+    'storage'   => [
+        'path' => env('STORAGE_URL', '127.0.0.1').'/yar/', 'services' => [
+            'ExpertListServices' => 'ExpertListServices',
+        ]
+    ],
+];
+?php>
+```
+###2、创建导出任务
+```php
+<?php
+
+namespace App\Console\Commands\Export;
+
+use Hexin\Library\Model\ExportJobModel;
+use Illuminate\Console\Command;
+use Hexin\Library\Traits\ExportDataTrait;
+use App\Libs\Helpers\ExportCSVHelper;
+
+class ExportTask extends Command
+{
+    /**
+    * 创建导出任务
+    * @throws \Exception
+     */
+    public function export()
+    {
+        //create export
+        ExportJobModel::createExportJob(
+            $type,//类型，仓储的type
+            $filename,//导出文件名
+            $params,//条件
+            [
+                'template_type' => 'exportExample',//模板类型
+                'class_name' => __CLASS__,//导出的类,一般是当然类
+                'method' => 'exportExampleData',//导出的方法
+                'dir_name' => 'olap',//导出存储的目录，app/exports/dir_name/2024-01-01
+            ]
+        );
+    }
+    
+    /**
+    * 导出数据
+    * @throws \Exception
+     */
+    public final exportExampleData($params, $path, $file_name)
+    {
+        $header = [
+            'id',
+            '名称',
+        ];
+        $exportCSVHelper = new ExportCSVHelper($path, $filename, $header);
+        $query = (new Model())->getQuery($params);
+        $query->chunkById(10000, function ($chunk) use ($exportCSVHelper) {
+            foreach ($chunk as $item) {
+                $row = [];
+                foreach ($item as $field => $val) {
+                    $row[] = $value;
+                }
+                $exportCSVHelper->fputCsv($row);
+            }
+        });
+        $exportCSVHelper->fclose();
+    }
+}
+?php>
+```
+###3、创建定时任务,每秒执行
+```php
+<?php
+
+namespace App\Console\Commands\Export;
+
+use Hexin\Library\Model\ExportJobModel;
+use Illuminate\Console\Command;
+use Hexin\Library\Traits\ExportDataTrait;
+
+class ExportTask extends Command
+{
+    use ExportDataTrait;
+
+    /**
+     * php artisan command:export_task
+     * The name and signature of the console command.
+     *
+     * @var string
+     */
+    protected $signature = 'command:export_task {template_type?}';
+
+    /**
+     * The console command description.
+     *
+     * @var string
+     */
+    protected $description = '导出任务，每分钟执行一次';
+
+    /**
+    * 模板类型 
+    * @var string[] 
+     */
+    public static $template_type = [
+        'exportExample',
+    ];
+
+    /**
+     * Create a new command instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        parent::__construct();
+    }
+
+    /**
+     * Execute the console command.
+     *
+     * @return mixed
+     */
+    public function handle()
+    {
+        $template_type = $this->argument('template_type');
+        if (!$template_type) {
+            $template_type = array_map(function ($item) {
+                return "'{$item}'";
+            }, self::$template_type);
+            $template_type = implode(',', $template_type);
+        } else {
+            $template_type = "'{$template_type}'";
+        }
+        $params = [
+            'where' => "template_type in ({$template_type}) and handling_status=" . ExportJobModel::HANDLING_STATUS_WAIT,
+        ];
+        $ErpExportTasks = ExportJobModel::getStorageExport($params); //默认rpc获取任务，可传第二个参数，从指定模型读取
+        if (!$ErpExportTasks) {
+            $this->info('没有导出任务');
+            return;
+        }
+        $this->traitRunCommand($ErpExportTasks);//默认rpc获取任务，可传第二个参数，从指定模型读取和导出
+
+        return true;
+    }
+}
+?php>
 ```
