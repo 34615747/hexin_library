@@ -28,9 +28,10 @@ abstract class AbstractExport
      */
     public function __construct(array $exportParams, string $saveFilename, string $absoluteSavePath)
     {
+        if (empty($absoluteSavePath)) throw new \Exception("保存的绝对路径不能为空");
         $this->exportParams = $exportParams;
         $this->absoluteSavePath = $absoluteSavePath;
-        $this->saveFileName = $saveFilename;
+        $this->saveFileName = empty($saveFilename) ? "export_".time()."_".rand(10000, 99999) : $saveFilename;
         $this->exportHelper = $this->getExportHelper();
         $this->exportHelper->setHeader($this->getExportHeader());
     }
@@ -55,37 +56,75 @@ abstract class AbstractExport
 
     protected abstract function chunkSize(): int;
 
-    protected abstract function getChunkIdColumn(): string;
+    protected function getChunkIdColumn(): string
+    {
+        return "";
+    }
 
-    protected abstract function getChunkIdColumnAlias(): string;
+    protected function getChunkIdColumnAlias(): string {
+        return "";
+    }
 
-    protected abstract function handleData(Array $dataList);
+    protected abstract function handleData(Array $dataList) :array;
 
     protected abstract function setStyle(array $data, int $startRow, int $endRow);
 
-    protected abstract function getExportType();
+    protected abstract function getExportType() :string;
 
-    function chunkByIdExport(){
+    public abstract function exportData();
+
+    /**
+     * Desc: 按chunkById 导出
+     * Author: @zyouan
+     * Date: 2024/1/31
+     */
+    protected function chunkByIdExport(){
+        if (empty($this->getChunkIdColumn()) || empty($this->getChunkIdColumnAlias())){
+            throw new \Exception("用chunkById的时候 getChunkIdColumn 和getChunkIdColumnAlias 要重写 并且不能为空");
+        }
         $totalCount = 2;
         $formatFieldArray = $this->getFormatFieldArray();
         $floatNumberRows = $formatFieldArray[self::FORMAT_FLOAT] ?? [];
         $this->query()->chunkById($this->chunkSize(), function (Collection $modelList) use($floatNumberRows, &$totalCount){
-           $this->export($modelList, $floatNumberRows, $totalCount);
+           $this->handleExport($modelList, $floatNumberRows, $totalCount);
         }, $this->getChunkIdColumn() , $this->getChunkIdColumnAlias());
         $this->exportHelper->close();
     }
 
-    function chunkExport(){
+    /**
+     * Desc:按chunk 导出
+     * Author: @zyouan
+     * Date: 2024/1/31
+     */
+    protected function chunkExport(){
         $totalCount = 2;
         $formatFieldArray = $this->getFormatFieldArray();
         $floatNumberRows = $formatFieldArray[self::FORMAT_FLOAT] ?? [];
         $this->query()->chunk($this->chunkSize(), function (Collection $modelList) use($floatNumberRows, &$totalCount){
-            $this->export($modelList, $floatNumberRows, $totalCount);
+            $this->handleExport($modelList, $floatNumberRows, $totalCount);
         });
         $this->exportHelper->close();
     }
 
-    private function export(Collection $modelList, $floatNumberRows, &$totalCount) {
+    /**
+     * Desc: 按分页方式导出
+     * Author: @zyouan
+     * Date: 2024/1/31
+     */
+    protected function paginationExport(){
+        $totalCount = 2;
+        $formatFieldArray = $this->getFormatFieldArray();
+        $floatNumberRows = $formatFieldArray[self::FORMAT_FLOAT] ?? [];
+        $totalNum = $this->query()->count();
+        $totalPageNum = intval(ceil($totalNum/ $this->chunkSize()));
+        for($i = 1; $i <= $totalPageNum; $i ++){
+            $dataList = $this->query()->forPage($i, $this->chunkSize())->get();
+            $this->handleExport($dataList,$floatNumberRows, $totalCount);
+        }
+        $this->exportHelper->close();
+    }
+
+    private function handleExport(Collection $modelList, $floatNumberRows, &$totalCount) {
         $startRows = $totalCount;
         $count =  $modelList->count();
         $totalCount += $count;
