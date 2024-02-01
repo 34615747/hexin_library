@@ -2,6 +2,8 @@
 
 namespace Hexin\Library\Jobs;
 
+use Hexin\Library\Cache\Redis\Lock;
+use Hexin\Library\Helpers\ViewAuthHelper;
 use Hexin\Library\Model\JobMessageModel;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
@@ -57,6 +59,18 @@ class BaseJob implements ShouldQueue
     }
 
     /**
+     * 开始之前
+     */
+    public function ingBefore()
+    {
+        if($this->JobMessageModel->is_now == 2){
+            //异步、初始化静态变量等
+            Lock::releaseAllLock();
+            ViewAuthHelper::$auths = [];
+        }
+    }
+
+    /**
      * 执行队列 
      *
      * @return void
@@ -84,6 +98,7 @@ class BaseJob implements ShouldQueue
 //                echo '该任务已完成，忽略处理:'.$JobMessageModel->_id.PHP_EOL;
 //                return;
 //            }
+            $this->ingBefore();
             $JobMessageModel->ing();
             if($this->is_cli){
                 echo '开始:'.$JobMessageModel->_id.PHP_EOL;
