@@ -49,9 +49,6 @@ class ExportCSVHelper
         if(!$fields){
             return;
         }
-        foreach ($fields as &$field) {
-            mb_convert_variables('GBK', 'UTF-8', $field);
-        }
         fputcsv($this->fileHandle, $fields);
     }
 
