@@ -101,7 +101,7 @@ class BaseJob implements ShouldQueue
             $this->ingBefore();
             $JobMessageModel->ing();
             if($this->is_cli){
-                echo '开始:'.$JobMessageModel->_id.PHP_EOL;
+                echo '开始:'.$JobMessageModel->viewBusinessType().PHP_EOL;
             }
 
             $res = $this->runBody();
