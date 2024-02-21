@@ -9,14 +9,23 @@ trait ExportDataTrait
 {
 
     /**
-     * Execute the console command. 
+     * 内存限制
+     * @return string
+     */
+    public function traitMemoryLimit()
+    {
+        return '1024M';
+    }
+
+    /**
+     * Execute the console command.
      * $ExportJobs 任务队列
      * $ExportJobModelClassName 任务模型，无则走rpc更新队列数据
      * @return mixed
      */
     public function traitRunCommand($ExportJobs,$ExportJobModelClassName = '')
     {
-        ini_set('memory_limit', '1024M');
+        ini_set('memory_limit', $this->traitMemoryLimit());
         echo '开始导出，数量:' . count($ExportJobs) . PHP_EOL;
         foreach ($ExportJobs as $ExportJob) {
             /**@var $ExportJob \Hexin\Library\Model\ExportJobModel */
