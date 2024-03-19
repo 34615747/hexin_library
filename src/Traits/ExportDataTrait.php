@@ -59,9 +59,14 @@ trait ExportDataTrait
                 //执行导出
                 $class_name = resolve($ExportJob['class_name']);
                 $mothod = $ExportJob['method'];
-                $class_name->{$mothod}($params, $path, $file_name);
+                $filePath = $class_name->{$mothod}($params, $path, $file_name);
 
-                $ExportJob['download_addreee'] = env('ASYNC_EXCEL_HOST') . '/storage' . $path . '/' . $file_name . '.csv';
+                if(stripos($filePath, 'app') !== false){
+                    $ExportJob['download_addreee'] = env('ASYNC_EXCEL_HOST') . '/storage' . $filePath;
+                }else{
+                    $ExportJob['download_addreee'] = env('ASYNC_EXCEL_HOST') . '/storage' . $path . '/' . $file_name . '.csv';
+                }
+
                 $ExportJob['end_time'] = date('Y-m-d H:i:s');
                 $ExportJob['handling_status'] = ExportJobModel::HANDLING_STATUS_SUCCESS;
                 ExportJobModel::successToUpdateStorageExport($ExportJob,$ExportJobModelClassName); //执行成功更新导出记录
