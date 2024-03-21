@@ -198,6 +198,42 @@ class JobMessageModel extends Model
     }
 
     /**
+     * 队列批量入库
+     * @param $merchant_id 商户id
+     * @param int $business_type 队列类型
+     * @param array $data 参数
+     * @param int $is_now 是否同步执行
+     * @param string $command_run_time 定时任务的运行开始时间（延迟队列可用）
+     * @param int $platform_id 平台id
+     * @return JobMessageModel|void
+     */
+    public static function insertBatchMsg($merchant_id,$business_type,array $data,$is_now=2,$command_run_time='',$platform_id=0)
+    {
+
+        if(!static::isCanUse($business_type,$merchant_id)){
+            return;
+        }
+        $p = [];
+        foreach ($data as $item){
+            $p[] = [
+                'merchant_id'        => $merchant_id,
+                'platform_id'        => $platform_id,
+                'business_type'      => $business_type,
+                'business_type_name' => static::$businessTypeLabel[$business_type]??'',
+                'params'             => json_encode($item,JSON_UNESCAPED_UNICODE),
+                'is_now'             => $is_now,
+                'command_run_time'   => $command_run_time == '' ? date('Y-m-d H:i:s') : $command_run_time,
+                'fail_count'         => 0,
+                'is_retry'           => 1,
+                'status'             => self::STATUS_WAIT,
+                'status_name'        => static::$statusLabel[self::STATUS_WAIT]??'',
+                'create_time'        => date('Y-m-d H:i:s'),
+            ];
+        }
+        return static::insert($p);
+    }
+
+    /**
      * 是否可以使用
      * User: lir 2022/10/9 14:09
      * @param $business_type
