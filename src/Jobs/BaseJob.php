@@ -71,6 +71,14 @@ class BaseJob implements ShouldQueue
     }
 
     /**
+     * 成功之后
+     */
+    public function succAfter()
+    {
+
+    }
+
+    /**
      * 执行队列 
      *
      * @return void
@@ -110,6 +118,7 @@ class BaseJob implements ShouldQueue
             if($this->is_cli){
                 echo '已处理'.PHP_EOL;
             }
+            $this->succAfter();
         }catch (\Exception $e){
             $this->rollBackDB();
             $this->failAfter($e);
