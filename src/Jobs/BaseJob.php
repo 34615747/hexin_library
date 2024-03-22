@@ -71,7 +71,7 @@ class BaseJob implements ShouldQueue
     }
 
     /**
-     * 成功之后
+     * 成功之后 
      */
     public function succAfter()
     {
