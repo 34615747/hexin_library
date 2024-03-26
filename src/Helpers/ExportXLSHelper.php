@@ -26,13 +26,13 @@ use Vtiful\Kernel\Excel;
  * $filePath = $XLSWriteExcelExport->store();
  * return response()->download($filePath, $file_name, $headers = ['Content-Type' => 'application/vnd.ms-excel;charset=utf-8']);
  */
-class ExportXLSHelper
+class ExportXLSHelper implements BasicExport
 {
     protected $excel;
     protected $fieldsArr, $filename;
 
     protected $path = 'app/xls_excel_export';
-
+    protected $full_path = '';
     /**
      * @param $fieldsArr ['id' => 'ID', 'name' => '名称'] 表头
      * @param $fileName //文件名
@@ -40,11 +40,18 @@ class ExportXLSHelper
      */
     public function __construct($fieldsArr, $fileName, $path = 'app/xls_excel_export')
     {
-        $this->setPath($path);
+        if(!StringHelper::isContainsDate($path)){
+            $path = $path . '/' . date('Y-m-d');
+        }
+        $full_path = storage_path().$path;
+        if (!is_dir($full_path)) {
+            mkdir($full_path, 0777, true);
+        }
         $config = [
-            'path' => $this->getPath()  // xlsx文件保存路径
+            'path' => $full_path  // xlsx文件保存路径
         ];
-
+        $this->path     = $path;
+        $this->full_path     = $full_path;
         // 如果文件名没有后缀xls|xlsx，自动加上
         $fileName = preg_match('/\.(xls|xlsx)$/', $fileName) ? $fileName : $fileName . '.xlsx';
         $this->filename = $fileName;
@@ -52,6 +59,69 @@ class ExportXLSHelper
         $this->excel = new Excel($config);
         $this->excel = $this->excel->fileName($fileName, 'sheet1');
         $this->excel = $this->excel->header(array_values($fieldsArr));
+    }
+
+    //写入数据
+    public function fwrite($array)
+    {
+        $this->writeData($array);
+    }
+    //保存问件
+    public function fclose()
+    {
+        $this->excel->output();
+    }
+    //获取文件地址(不含域名)
+    public function getFilePath()
+    {
+        return $this->path . '/' . $this->filename;
+    }
+
+    public function getFileFullPath()
+    {
+        return $this->full_path . '/' . $this->filename;
+    }
+
+    /**
+     * 设置单元格样式 设置成会计格式 数字保留两位小数
+     * @param $cell //单元格  K:K
+     * @param int $cell_with 列宽
+     * @return mixed
+     */
+    public function setFinancialNumFormat($cell, $cell_with = 13)
+    {
+        $this->setNumberFormat($cell, '_ * #,##0.00_ ;_ * -#,##0.00_ ;_ * "-"??_ ;_ @_ ', $cell_with);
+    }
+    /**
+     * 设置单元格样式 设置成会计格式 整数
+     * @param $cell //单元格  K:L
+     * @param int $cell_with 列宽
+     *
+     */
+    public function setFinancialIntFormat($cell, $cell_with = 13)
+    {
+        $this->setNumberFormat($cell, '_ * #,##0_ ;_ * -#,##0_ ;_ * "-"_ ;_ @_ ', $cell_with);
+    }
+    public function download()
+    {
+        $filePath = $this->excel->output();
+        // Set Header
+        header("Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        header('Content-Disposition: attachment;filename="' . $this->filename . '"');
+        header('Content-Length: ' . filesize($filePath));
+        header('Content-Transfer-Encoding: binary');
+        header('Cache-Control: must-revalidate');
+        header('Cache-Control: max-age=0');
+        header('Pragma: public');
+
+        ob_clean();
+        flush();
+
+        if (copy($filePath, 'php://output') === false) {
+            // Throw exception
+        }
+
+//        @unlink($filePath);
     }
 
     /**
@@ -77,28 +147,6 @@ class ExportXLSHelper
         $format = new \Vtiful\Kernel\Format($fileHandle);
         $numberStyle = $format->number($number_format)->toResource();
         $this->excel->setColumn($cell, $cell_with, $numberStyle);
-    }
-
-    /**
-     * 设置单元格样式 设置成会计格式 数字保留两位小数
-     * @param $cell //单元格  K:K
-     * @param int $cell_with 列宽
-     * @return mixed
-     */
-    public function setFinancialNumFormat($cell, $cell_with = 13)
-    {
-        $this->setNumberFormat($cell, '_ * #,##0.00_ ;_ * -#,##0.00_ ;_ * "-"??_ ;_ @_ ', $cell_with);
-    }
-
-    /**
-     * 设置单元格样式 设置成会计格式 整数
-     * @param $cell //单元格  K:L
-     * @param int $cell_with 列宽
-     *
-     */
-    public function setFinancialIntFormat($cell, $cell_with = 13)
-    {
-        $this->setNumberFormat($cell, '_ * #,##0_ ;_ * -#,##0_ ;_ * "-"_ ;_ @_ ', $cell_with);
     }
 
     /**
@@ -139,11 +187,6 @@ class ExportXLSHelper
         return $filePath;
     }
 
-    public function setPath($path)
-    {
-        $this->path = $path . '/' . date('Y-m-d');
-    }
-
     public function getDownloadUrl()
     {
         return env('ASYNC_EXCEL_HOST') . '/storage/' . $this->path . '/' . $this->filename;
@@ -152,39 +195,6 @@ class ExportXLSHelper
     public function getDownloadPath()
     {
         return $this->path . '/' . $this->filename;
-    }
-
-    public function getPath()
-    {
-        $path = storage_path($this->path);
-        if (!is_dir($path)) {
-            mkdir($path, 0755, true);
-        }
-        $path = realpath($path);
-
-        return $path;
-    }
-
-    public function download()
-    {
-        $filePath = $this->excel->output();
-        // Set Header
-        header("Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-        header('Content-Disposition: attachment;filename="' . $this->filename . '"');
-        header('Content-Length: ' . filesize($filePath));
-        header('Content-Transfer-Encoding: binary');
-        header('Cache-Control: must-revalidate');
-        header('Cache-Control: max-age=0');
-        header('Pragma: public');
-
-        ob_clean();
-        flush();
-
-        if (copy($filePath, 'php://output') === false) {
-            // Throw exception
-        }
-
-//        @unlink($filePath);
     }
 
     protected function formatData($item)

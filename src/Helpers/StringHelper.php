@@ -219,7 +219,7 @@ class StringHelper
     }
 
     /**
-     * 获得base64图片 
+     * 获得base64图片
      * @param $url
      * @return string
      * @throws \Exception
@@ -244,5 +244,18 @@ class StringHelper
         }
         $extension = pathinfo($url,PATHINFO_EXTENSION);
         return "data:image/{$extension};base64," . $base64Code;
+    }
+
+    /**
+     * 是否含有日期 Y-m-d
+     * @return bool
+     */
+    public static function isContainsDate($string)
+    {
+        $pattern = '/\b\d{4}-\d{2}-\d{2}\b/';
+        if (preg_match($pattern, $string)) {
+            return true;
+        }
+        return false;
     }
 }
