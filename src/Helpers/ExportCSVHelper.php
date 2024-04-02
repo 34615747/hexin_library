@@ -105,9 +105,10 @@ class ExportCSVHelper implements BasicExport
     public function formatData($item)
     {
         $i = 0;
-        return array_map(function($k) use ($item,$i) {
-            if(isset($item[$i])){
-                return $item[$i];
+        return array_map(function($k) use ($item,&$i) {
+            $i++;
+            if(isset($item[$i-1])){
+                return $item[$i-1];
             }
             return $item[$k] ?? '';
         }, array_keys($this->fieldsArr));
