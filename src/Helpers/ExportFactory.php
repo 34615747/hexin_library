@@ -9,9 +9,11 @@ class ExportFactory
     {
         switch ($driver){
             case 'xls':
+            case 'xlsx':
                 $this->exportClass = new ExportXLSHelper($headers,$filename,$path);
                 break;
-            default: $this->exportClass = new ExportCSVHelper($path, $filename, $headers);
+            default:
+                $this->exportClass = new ExportCSVHelper($path, $filename, $headers);
                 break;
         }
     }
@@ -26,6 +28,14 @@ class ExportFactory
     public function fwrite($item)
     {
         return $this->exportClass->fwrite($item);
+    }
+
+    /**
+     * 批量写入
+     */
+    public function writeDataList($item)
+    {
+        return $this->exportClass->writeDataList($item);
     }
 
     /**

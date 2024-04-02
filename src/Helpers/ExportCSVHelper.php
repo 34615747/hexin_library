@@ -21,9 +21,7 @@ class ExportCSVHelper implements BasicExport
         if (!is_dir($full_path)) {
             mkdir($full_path, 0777, true);
         }
-        if(!isset($fieldsArrs[0])){
-            $fieldsArrs = array_keys($fieldsArrs);
-        }
+
         $this->path     = $path;
         $this->full_path     = $full_path;
         $this->filename = $filename . '.csv';
@@ -46,6 +44,16 @@ class ExportCSVHelper implements BasicExport
         $row = $this->formatData($fields);
 
         fputcsv($this->fileHandle, $row);
+    }
+
+    /**
+     * 批量写入数据
+     */
+    public function writeDataList($list)
+    {
+        foreach ($list as $fields){
+            $this->fwrite($fields);
+        }
     }
 
     /**
@@ -81,7 +89,7 @@ class ExportCSVHelper implements BasicExport
 
     public function download()
     {
-        echo '导出失败:csv文件占不支持直接导出';
+        throw new \Exception('导出失败:csv文件占不支持直接导出');
     }
 
     /**
@@ -96,7 +104,11 @@ class ExportCSVHelper implements BasicExport
 
     public function formatData($item)
     {
-        return array_map(function($k) use ($item) {
+        $i = 0;
+        return array_map(function($k) use ($item,$i) {
+            if(isset($item[$i])){
+                return $item[$i];
+            }
             return $item[$k] ?? '';
         }, array_keys($this->fieldsArr));
     }
