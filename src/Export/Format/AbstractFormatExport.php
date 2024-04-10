@@ -35,4 +35,17 @@ abstract class AbstractFormatExport
         $this->close();
     }
 
+    /**
+     * @return mixed
+     */
+    public function getFileHandle()
+    {
+        return $this->fileHandle;
+    }
+
+    public function getFileSaveAbsolutePath(): string
+    {
+        return $this->absoluteSavePath.DIRECTORY_SEPARATOR.$this->saveFileName;
+    }
+
 }

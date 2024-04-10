@@ -22,6 +22,7 @@ abstract class AbstractExport
 
     protected $absoluteSavePath;
     protected $saveFileName;
+    protected $maxRows; //最大行数
 
     /**
      * @throws \Exception
@@ -145,6 +146,7 @@ abstract class AbstractExport
         }
         $this->exportHelper->batchWriteList($writeList);
         $this->setStyle($dataList, $startRows, $endRows);
+        $this->maxRows = $totalCount;
         $this->exportHelper->store();
     }
 
@@ -162,6 +164,14 @@ abstract class AbstractExport
             default:
                 throw new \Exception("暂不支持该方式导出");
         }
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getMaxRows()
+    {
+        return $this->maxRows;
     }
 
 }

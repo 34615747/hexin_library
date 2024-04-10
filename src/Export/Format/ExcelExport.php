@@ -67,4 +67,9 @@ class ExcelExport extends AbstractFormatExport
         $this->fileHandle->output();
     }
 
+    public function getFileHandle() :Excel
+    {
+        return $this->fileHandle;
+    }
+
 }
