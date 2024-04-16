@@ -5,8 +5,11 @@ namespace Hexin\Library\Export;
 use Hexin\Library\Export\Format\AbstractFormatExport;
 use Hexin\Library\Export\Format\CsvExport;
 use Hexin\Library\Export\Format\ExcelExport;
+use Hexin\Library\Export\Format\PhpSpreadExcelExport;
+use Hexin\Library\Export\Format\XlsxWriterExcelExport;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Log;
 
 abstract class AbstractExport
 {
@@ -19,6 +22,8 @@ abstract class AbstractExport
 
     const EXPORT_EXCEL = "excel";
     const EXPORT_CSV = "csv";
+    const EXPORT_PHP_SPREAD_EXCEL = 'php_spread_excel';
+    const EXPORT_XLSX_WRITER_EXCEL = 'xlsx_writer_excel';
 
     protected $absoluteSavePath;
     protected $saveFileName;
@@ -34,7 +39,7 @@ abstract class AbstractExport
         $this->absoluteSavePath = $absoluteSavePath;
         $this->saveFileName = empty($saveFilename) ? "export_".time()."_".rand(10000, 99999) : $saveFilename;
         $this->exportHelper = $this->getExportHelper();
-        $this->exportHelper->setHeader($this->getExportHeader());
+        $this->exportHelper->setHeader($this->getExportHeader(), $this->getExportHeaderStyle());
     }
 
     /**
@@ -44,6 +49,16 @@ abstract class AbstractExport
      * @return array
      */
     protected abstract function getExportHeader() : array;
+
+    protected function getExportHeaderStyle() : ?array
+    {
+        return null;
+    }
+
+    protected function getExportHeaderKeyMap() : array
+    {
+        return $this->getExportHeader();
+    }
 
     /**
      * Desc: 需要格式化的字段
@@ -125,13 +140,13 @@ abstract class AbstractExport
         $this->exportHelper->close();
     }
 
-    private function handleExport(Collection $modelList, $floatNumberRows, &$totalCount) {
+    protected function handleExport(Collection $modelList, $floatNumberRows, &$totalCount) {
         $startRows = $totalCount;
         $count =  $modelList->count();
-        $totalCount += $count;
+        $totalCount += ($count -1);
         $endRows = $totalCount;
         $dataList = $this->handleData($modelList->toArray());
-        $headerList = $this->getExportHeader();
+        $headerList = $this->getExportHeaderKeyMap();
         $writeList = [];
         foreach ($dataList as $data) {
             $tmp = [];
@@ -157,10 +172,14 @@ abstract class AbstractExport
     {
         $type = $this->getExportType();
         switch($type){
-            case self::EXPORT_EXCEL == $type:
+            case self::EXPORT_EXCEL:
                 return new ExcelExport($this->absoluteSavePath, $this->saveFileName);
-            case self::EXPORT_CSV == $type:
+            case self::EXPORT_CSV:
                 return new CsvExport($this->absoluteSavePath, $this->saveFileName);
+            case self::EXPORT_PHP_SPREAD_EXCEL:
+                return new PhpSpreadExcelExport($this->absoluteSavePath, $this->saveFileName);
+            case self::EXPORT_XLSX_WRITER_EXCEL:
+                return new XlsxWriterExcelExport($this->absoluteSavePath, $this->saveFileName);
             default:
                 throw new \Exception("暂不支持该方式导出");
         }
@@ -172,6 +191,14 @@ abstract class AbstractExport
     public function getMaxRows()
     {
         return $this->maxRows;
+    }
+
+    protected function echoUseMen($i){
+        $memoryUsageBytes = memory_get_usage();
+        // 转换为MB，保留两位小数
+        $memoryUsageMb = round($memoryUsageBytes / 1024 / 1024, 2);
+        echo date("Y-m-d H:i:s")." ". $i." 当前内存使用量：{$memoryUsageMb} MB ".PHP_EOL;
+        Log::debug($i." 当前内存使用量：{$memoryUsageMb} MB ");
     }
 
 }

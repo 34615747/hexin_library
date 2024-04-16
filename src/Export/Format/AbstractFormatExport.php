@@ -13,7 +13,7 @@ abstract class AbstractFormatExport
         $this->absoluteSavePath = $absoluteSavePath;
         $this->saveFileName = $saveFilename;
     }
-    abstract function setHeader(array $header);
+    abstract function setHeader(array $header, $style = null);
     abstract function batchWriteList(array $dataList);
     abstract function write(array $data);
     abstract function close();

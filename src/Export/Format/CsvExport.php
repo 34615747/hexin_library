@@ -35,7 +35,7 @@ class CsvExport extends AbstractFormatExport
         }
     }
 
-    function setHeader(array $header)
+    function setHeader(array $header, $style = null)
     {
         $this->write($header);
     }

@@ -35,7 +35,7 @@ class ExcelExport extends AbstractFormatExport
         $this->write([$data]);
     }
 
-    function setHeader(array $header)
+    function setHeader(array $header, $style = null)
     {
         $this->fileHandle = $this->fileHandle->header(array_values($header));
     }
