@@ -7,6 +7,8 @@
 5. 导出xls类
 6. 文件导入任务
 7. 导出任务
+8. 工厂导出类
+9. 发送消息
 
 安装：composer require hexin/library
 
@@ -583,4 +585,79 @@ class ExportTask extends Command
     }
 }
 ?php>
+```
+
+## 八、工厂导出类
+```php
+<?php
+namespace App\Test;
+
+use Hexin\Library\Helpers\ExportFactory;
+
+class Test
+
+    /**
+     *  逐行写入数据 导出
+     */
+    public function export()
+    {
+        $query    = [];//查询的query
+        $path     = 'app/exports/test' . date('Y-m-d');//文件存放的文件夹  eg:是导出脚本（ExportDataTrait.php）传过来的path
+        $fileName = 'test';//文件名称（不包含文件格式后缀） eg:是导出脚本(ExportDataTrait.php)传过来的文件名称
+        $header   = ['title_1' => '标题1', 'title_2' => '标题2'];//表格标题
+        $driver   = 'xls'; //文件格式类型：csv, xls
+        //创建导出类工厂实例
+        $exportFactory = new ExportFactory($path, $fileName, $header, $driver);
+        //插入数据
+        $query->chunk(500, function ($itemArr) use ($exportFactory) {
+            $itemArr = collect($itemArr)->toArray();
+            foreach ($itemArr as $item) {              
+                $exportFactory->fwrite($itemData);
+            }
+        });
+        //获取文件地址（不包含域名）
+        $filePath = $exportFactory->getFilePath();
+        //保存文件
+        $exportFactory->fclose();
+
+        return $filePath;
+    }
+}
+```
+## 九、发送消息
+###1、config目录下，新增配置文件message_notice
+```php
+return [
+    'dingding'=>[//钉钉
+        'error'=>[
+            'webhook' => '',//机器人的地址
+            'secret'  => '',//机器人的secret
+            'mobiles' => [],//@的人
+        ],
+        'info'=>[
+            'webhook' => '',
+            'secret'  => '',
+            'mobiles' => [],
+        ],
+    ]
+];
+```
+
+###2、发送消息
+```php
+<?php
+namespace App\Test;
+
+use Hexin\Library\Helpers\MessageHelper;
+
+class Test
+{
+    /**
+     *  逐行写入数据 导出
+     */
+    public function testExportBusiness()
+    {
+        MessageHelper::sendText('消息内容','dingding');
+    }
+}
 ```
