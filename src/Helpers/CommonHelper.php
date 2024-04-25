@@ -23,7 +23,7 @@ class CommonHelper
 
     /**
      * 是否生产环境
-     * User: lir 2020/9/2 16:02
+     * User: lir 2020/9/2 16:02   
      * @return bool
      */
     public static function isProduction()
