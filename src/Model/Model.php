@@ -39,6 +39,7 @@ class Model extends LaravelModel
     const PLATFORM_HXCART = 22;
     const PLATFORM_TIKTOK = 30;
     const PLATFORM_QVC = 31;
+    const PLATFORM_TEMU = 32;
     public static $platformLabel = [
         self::PLATFORM_AMAZON => 'Amazon',
         self::PLATFORM_ALIEXPRESS => 'Aliexpress',
@@ -57,6 +58,50 @@ class Model extends LaravelModel
         self::PLATFORM_UD => 'Ud',
         self::PLATFORM_TIKTOK => 'Tiktok',
         self::PLATFORM_QVC => 'Qvc',
+        self::PLATFORM_TEMU => 'Temu',
+    ];
+
+    /**
+     * 平台简码
+     * 可添加，别修改，影响单号命名
+     */
+    const SIMPLE_PLATFORM_AM = 1;
+    const SIMPLE_PLATFORM_AE = 2;
+    const SIMPLE_PLATFORM_WH = 3;
+    const SIMPLE_PLATFORM_EB = 4;
+    const SIMPLE_PLATFORM_JM = 6;
+    const SIMPLE_PLATFORM_WM = 8;
+    const SIMPLE_PLATFORM_SP = 9;
+    const SIMPLE_PLATFORM_SY = 13;
+    const SIMPLE_PLATFORM_VV = 14;
+    const SIMPLE_PLATFORM_CD = 15;
+    const SIMPLE_PLATFORM_LZ = 16;
+    const SIMPLE_PLATFORM_AI = 17;
+    const SIMPLE_PLATFORM_DR = 18;
+    const SIMPLE_PLATFORM_UD = 1000;
+    const SIMPLE_PLATFORM_HX = 22;
+    const SIMPLE_PLATFORM_TT = 30;
+    const SIMPLE_PLATFORM_QVC = 31;
+    const SIMPLE_PLATFORM_TEMU = 32;
+    public static $simplePlatformLabel = [
+        self::SIMPLE_PLATFORM_AM => 'AM',
+        self::SIMPLE_PLATFORM_AE => 'AE',
+        self::SIMPLE_PLATFORM_WH => 'WH',
+        self::SIMPLE_PLATFORM_EB => 'EB',
+        self::SIMPLE_PLATFORM_JM => 'JM',
+        self::SIMPLE_PLATFORM_WM => 'WM',
+        self::SIMPLE_PLATFORM_SP => 'SP',
+        self::SIMPLE_PLATFORM_SY => 'SY',
+        self::SIMPLE_PLATFORM_VV => 'VV',
+        self::SIMPLE_PLATFORM_LZ => 'LZ',
+        self::SIMPLE_PLATFORM_AI => 'AI',
+        self::SIMPLE_PLATFORM_DR => 'DR',
+        self::SIMPLE_PLATFORM_CD => 'CD',
+        self::SIMPLE_PLATFORM_HX => 'HX',
+        self::SIMPLE_PLATFORM_UD => 'UD',
+        self::SIMPLE_PLATFORM_TT => 'TT',
+        self::SIMPLE_PLATFORM_QVC => 'QV',
+        self::SIMPLE_PLATFORM_TEMU => 'TM',
     ];
 
     /**

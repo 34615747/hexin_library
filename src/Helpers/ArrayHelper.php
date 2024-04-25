@@ -4,7 +4,7 @@ namespace Hexin\Library\Helpers;
 class ArrayHelper
 {
     /**
-     * 对象转数组
+     * 对象转数组 
      * @param $object
      * @return mixed
      */
