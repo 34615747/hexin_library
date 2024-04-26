@@ -18,6 +18,9 @@ trait JobMessageCommand
         $query->chunkById($this->traitGetRunStep(), function ($JobMessageModels) {
             /** @var JobMessageModel $JobMessageModel */
             foreach ($JobMessageModels as $JobMessageModel) {
+                if (!$this->traitHandleBefore($JobMessageModel)){
+                    continue;
+                }
                 try {
                     $this->traitHandleJob($JobMessageModel);
                 }catch (\Exception $e){
@@ -61,6 +64,11 @@ trait JobMessageCommand
         $JobMessageModel->status_name = $JobMessageModel->viewStatus();
         $JobMessageModel->save();
         $JobMessageModel->insertJob($JobMessageModel);
+    }
+
+    public function traitHandleBefore(JobMessageModel $JobMessageModel): bool
+    {
+        return true;
     }
 
 
