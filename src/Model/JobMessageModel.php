@@ -29,6 +29,10 @@ class JobMessageModel extends Model
         'start_time',
         'end_time',
         'remark',
+        'params_md5',
+        'delete_time',
+        'extend_params1',
+        'extend_params2',
     ];
 
     /**
@@ -177,7 +181,7 @@ class JobMessageModel extends Model
      * @param int $platform_id 平台id
      * @return JobMessageModel|void
      */
-    public static function insertMsg($merchant_id,$business_type,array $data,$is_now=2,$command_run_time='',$platform_id=0)
+    public static function insertMsg($merchant_id,$business_type,array $data,$is_now=2,$command_run_time='',$platform_id=0,$extend_params1='',$extend_params2='')
     {
         if(!static::isCanUse($business_type,$merchant_id)){
             return;
@@ -187,11 +191,23 @@ class JobMessageModel extends Model
         $JobMessageModel->platform_id = $platform_id;
         $JobMessageModel->business_type = $business_type;
         $JobMessageModel->business_type_name = $JobMessageModel->viewBusinessType();
+
+        $JobMessageModel->params_md5 = md5($JobMessageModel->merchant_id.'#'.$business_type.'#'.md5(json_encode($data)));
+
+        if(static::isFilterRepeat($business_type)){
+            //队列中存在相同参数的队列
+            if($existsModel = self::where('params_md5',$JobMessageModel->params_md5)->whereIn('status',[self::STATUS_WAIT,self::STATUS_JOB])->first()){
+                return $existsModel;
+            }
+        }
+
         $JobMessageModel->params = json_encode($data,JSON_UNESCAPED_UNICODE);
         $JobMessageModel->is_now = $is_now;
         $JobMessageModel->command_run_time = $command_run_time == '' ? date('Y-m-d H:i:s') : $command_run_time;
         $JobMessageModel->fail_count = 0;
         $JobMessageModel->is_retry = 1;
+        $JobMessageModel->extend_params1 = $extend_params1;
+        $JobMessageModel->extend_params2 = $extend_params2;
         $JobMessageModel->wait();
 
         return $JobMessageModel;
@@ -207,7 +223,7 @@ class JobMessageModel extends Model
      * @param int $platform_id 平台id
      * @return JobMessageModel|void
      */
-    public static function insertBatchMsg($merchant_id,$business_type,array $data,$is_now=2,$command_run_time='',$platform_id=0)
+    public static function insertBatchMsg($merchant_id,$business_type,array $data,$is_now=2,$command_run_time='',$platform_id=0,$extend_params1='',$extend_params2='')
     {
 
         if(!static::isCanUse($business_type,$merchant_id)){
@@ -220,6 +236,7 @@ class JobMessageModel extends Model
                 'platform_id'        => $platform_id,
                 'business_type'      => $business_type,
                 'business_type_name' => static::$businessTypeLabel[$business_type]??'',
+                'params_md5'         => md5($merchant_id.'#'.$business_type.'#'.md5(json_encode($item))),
                 'params'             => json_encode($item,JSON_UNESCAPED_UNICODE),
                 'is_now'             => $is_now,
                 'command_run_time'   => $command_run_time == '' ? date('Y-m-d H:i:s') : $command_run_time,
@@ -228,6 +245,8 @@ class JobMessageModel extends Model
                 'status'             => self::STATUS_WAIT,
                 'status_name'        => static::$statusLabel[self::STATUS_WAIT]??'',
                 'create_time'        => date('Y-m-d H:i:s'),
+                'extend_params1'=>$extend_params1,
+                'extend_params2'=>$extend_params2,
             ];
         }
         return static::insert($p);
@@ -247,6 +266,19 @@ class JobMessageModel extends Model
         return true;
     }
 
+    /**
+     * 是否过滤重复
+     * User: lir 2022/10/9 14:09
+     * @param $business_type
+     * @param $user_id
+     * @return bool
+     * @throws \App\Exceptions\ApiException
+     * @throws \Psr\SimpleCache\InvalidArgumentException
+     */
+    public static function isFilterRepeat($business_type)
+    {
+        return false;
+    }
 
 
     /**
@@ -272,7 +304,30 @@ class JobMessageModel extends Model
         $this->status = self::STATUS_ED;
         $this->status_name = $this->viewStatus();
         $this->end_time = date('Y-m-d H:i:s');
+        $this->delete_time = self::setSuccDeleteTime();
         $this->save();
+    }
+
+    /**
+     * 设置成功的删除时间
+     * 默认成功之后，会在30天后删除
+     * @param int $daysToAdd 新增的天数
+     * @return false|string
+     */
+    public static function setSuccDeleteTime($daysToAdd=30)
+    {
+        return date('Y-m-d H:i:s',strtotime("+{$daysToAdd} days"));
+    }
+
+    /**
+     * 设置失败的删除时间
+     * 默认失败之后，会在60天后删除
+     * @param int $daysToAdd 新增的天数
+     * @return false|string
+     */
+    public static function setFailDeleteTime($daysToAdd=60)
+    {
+        return date('Y-m-d H:i:s',strtotime("+{$daysToAdd} days"));
     }
 
     /**
@@ -302,6 +357,7 @@ class JobMessageModel extends Model
         if(!$this->isRetry()){
             $this->is_retry = 2;
         }
+        $this->delete_time = self::setFailDeleteTime();
         $this->save();
     }
 
