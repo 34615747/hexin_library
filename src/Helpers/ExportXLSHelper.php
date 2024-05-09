@@ -150,6 +150,59 @@ class ExportXLSHelper implements BasicExport
     }
 
     /**
+     * 设置单元格背景颜色
+     * @param $cell //单元格  A1:L1
+     * @param int $cell_with 列宽
+     * @param string $color 颜色
+     * @return mixed
+     */
+    public function setCellGroupColor($cell, $color, $cell_with = 13)
+    {
+        $fileHandle = $this->excel->getHandle();
+        $format = new \Vtiful\Kernel\Format($fileHandle);
+        $colorFormat = $this->mappingColor($format, $color);
+        $style = $format->background($colorFormat)->toResource();
+
+        $this->excel->setRow($cell, $cell_with, $style);
+    }
+
+    public function mappingColor($format, $color)
+    {
+        switch ($color){
+            case 'COLOR_BLACK':
+                return $format::COLOR_BLACK;
+            case 'COLOR_BLUE':
+                return $format::COLOR_BLUE;
+            case 'COLOR_BROWN':
+                return $format::COLOR_BROWN;
+            case 'COLOR_CYAN':
+                return $format::COLOR_CYAN;
+            case 'COLOR_GRAY':
+                return $format::COLOR_GRAY;
+            case 'COLOR_GREEN':
+                return $format::COLOR_GREEN;
+            case 'COLOR_LIME':
+                return $format::COLOR_LIME;
+            case 'COLOR_MAGENTA':
+                return $format::COLOR_MAGENTA;
+            case 'COLOR_ORANGE':
+                return $format::COLOR_ORANGE;
+            case 'COLOR_PINK':
+                return $format::COLOR_PINK;
+            case 'COLOR_NAVY':
+                return $format::COLOR_NAVY;
+            case 'COLOR_PURPLE':
+                return $format::COLOR_PURPLE;
+            case 'COLOR_SILVER':
+                return $format::COLOR_SILVER;
+            case 'COLOR_YELLOW':
+                return $format::COLOR_YELLOW;
+            default:
+                return $format::COLOR_WHITE;
+        }
+    }
+
+    /**
      * 逐行写入数据
      */
     public function writeData($item)
