@@ -174,11 +174,14 @@ class JobMessageModel extends Model
         if($this->remark){
             $this->remark = '';
         }
-        if($this->start_time){
+        if($this->start_time != '0000-00-00 00:00:00'){
             $this->start_time = '';
         }
-        if($this->end_time){
+        if($this->end_time != '0000-00-00 00:00:00'){
             $this->end_time = '';
+        }
+        if($this->delete_time != '0000-00-00 00:00:00'){
+            $this->delete_time = '';
         }
         $this->save();
     }
@@ -372,7 +375,6 @@ class JobMessageModel extends Model
         foreach ($retry_msgs as $retry_msg){
             if((strpos($remark['msg'],$retry_msg) !== false) || ($retry_msg == '*')){
                 $this->is_retry = 1;
-                $this->command_run_time = date('Y-m-d H:i:s',time());
                 break;
             }
         }

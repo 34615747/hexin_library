@@ -57,12 +57,7 @@ trait FailJobMessageCommand
 
     public function traitHandleJob($JobMessageModel)
     {
-        $JobMessageModel->status = JobMessageModel::STATUS_WAIT;
-        $JobMessageModel->start_time = '';
-        $JobMessageModel->end_time = '';
-        $JobMessageModel->remark = '';
-        $JobMessageModel->delete_time = '';
-        $JobMessageModel->save();
+        $JobMessageModel->wait();
     }
 
 }
