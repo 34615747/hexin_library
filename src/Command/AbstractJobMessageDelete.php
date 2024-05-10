@@ -47,6 +47,7 @@ abstract class AbstractJobMessageDelete extends Command
         $query = $this->getJobMessage()->newQuery();
         $query->where("delete_time", "<=", date("Y-m-d H:i:s"));
         $query->where("delete_time", ">", "0000-00-00 00:00:00");
+        $query->whereIn("status", [JobMessageModel::STATUS_ED,JobMessageModel::STATUS_FAIL,JobMessageModel::STATUS_STOP]);
         $query->select(['id']);
         $query->orderBy("id", "ASC");
         return $query;

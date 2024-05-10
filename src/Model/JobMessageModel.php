@@ -104,7 +104,7 @@ class JobMessageModel extends Model
     public static function jobDetail()
     {
         return [
-            self::BUSINESS_TYPE_EXAMPLE => ['max_fail_count'=>3],
+//            self::BUSINESS_TYPE_EXAMPLE => ['max_fail_count'=>3,'retry_msgs'=>['*']],//*代表，任何错误消息都重试，否则指定内容['curl','500']
         ];
     }
 
@@ -121,6 +121,18 @@ class JobMessageModel extends Model
             $max_fail_count = $jobDetail['max_fail_count']??static::MAX_FAIL_COUNT;
         }
         return (int)$max_fail_count;
+    }
+
+    /**
+     * 获取重试消息
+     * User: lir 2022/2/21 12:07
+     * @return int|mixed
+     */
+    public function getRetryMsgs()
+    {
+        $jobDetail = static::jobDetail()[$this->business_type]??[];
+        $retry_msgs = $jobDetail['retry_msgs']??[];
+        return $retry_msgs;
     }
 
     /**
@@ -205,7 +217,7 @@ class JobMessageModel extends Model
         $JobMessageModel->is_now = $is_now;
         $JobMessageModel->command_run_time = $command_run_time == '' ? date('Y-m-d H:i:s') : $command_run_time;
         $JobMessageModel->fail_count = 0;
-        $JobMessageModel->is_retry = 1;
+        $JobMessageModel->is_retry = 2;
         $JobMessageModel->extend_params1 = $extend_params1;
         $JobMessageModel->extend_params2 = $extend_params2;
         $JobMessageModel->wait();
@@ -346,6 +358,7 @@ class JobMessageModel extends Model
         $this->end_time = date('Y-m-d H:i:s');
         $this->remark = json_encode($remark,JSON_UNESCAPED_UNICODE);
         $this->fail_count = ($this->fail_count??0)+1;
+        //是否停止判断
         foreach ($this->filterErrorMsg() as $msg){
             if(strpos($remark['msg'],$msg) !== false){
                 $this->fail_count = $this->getMaxFailCount()+1;
@@ -354,6 +367,16 @@ class JobMessageModel extends Model
                 break;
             }
         }
+        //是否重试判断
+        $retry_msgs = $this->getRetryMsgs();
+        foreach ($retry_msgs as $retry_msg){
+            if((strpos($remark['msg'],$retry_msg) !== false) || ($retry_msg == '*')){
+                $this->is_retry = 1;
+                $this->command_run_time = date('Y-m-d H:i:s',time());
+                break;
+            }
+        }
+
         if(!$this->isRetry()){
             $this->is_retry = 2;
         }

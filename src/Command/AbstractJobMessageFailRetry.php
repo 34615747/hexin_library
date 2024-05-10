@@ -16,7 +16,7 @@ abstract class AbstractJobMessageFailRetry extends Command
      * php artisan command:job_message_fail_retry
      * @var string
      */
-    protected $signature = 'command:job_message_fail_retry';
+    protected $signature = 'command:job_message_fail_retry {id?}';
 
     /**
      * The console command description.
@@ -37,23 +37,63 @@ abstract class AbstractJobMessageFailRetry extends Command
      */
     public function handle()
     {
+        if(!static::failRetryBusinessType() && !static::ingRetryBusinessType()){
+            echo '暂无重试任务'.PHP_EOL;
+            return;
+        }
         $query = $this->getFailQuery();
         $this->traitRunCommand($query);
     }
 
     abstract function getJobMessage() :Model;
 
+    /**
+     * 失败重试类型
+     */
+    public static function failRetryBusinessType()
+    {
+        return [];
+    }
+
+    /**
+     * 进行中重试类型
+     */
+    public static function ingRetryBusinessType()
+    {
+        return [];
+    }
+
+    /**
+     * 进行中的超时时间
+     * @return int
+     */
+    public static function ingTimeOut()
+    {
+        return 3600;
+    }
+
     protected function getFailQuery() :Builder
     {
+        $id = $this->argument('id');
         $query = $this->getJobMessage()->newQuery();
+        $query->where('is_retry',\Hexin\Library\Model\Model::TRUE);
+        if ($id) {
+            $query = $query->where('id', $id);
+        }
         $query->where(function (Builder $subQuery){
-            $subQuery->whereIn('status', [
-                JobMessageModel::STATUS_FAIL,
-            ]);
-            $subQuery->orWhere(function (Builder $subSubQuery) {
-                $subSubQuery->where("status", JobMessageModel::STATUS_ING);
-                $subSubQuery->where("start_time", "<", date("Y-m-d H:i:s", time() - 3600));//超过1小时的进行中 重新跑 可能线程被杀了或者资源耗尽了
-            });
+            if(static::failRetryBusinessType()){
+                $subQuery->where(function (Builder $subSubQuery){
+                    $subSubQuery->whereIn('business_type',static::failRetryBusinessType());
+                    $subSubQuery->where('status', JobMessageModel::STATUS_FAIL);
+                });
+            }
+            if(static::ingRetryBusinessType()){
+                $subQuery->orWhere(function (Builder $subSubQuery) {
+                    $subSubQuery->whereIn('business_type',static::ingRetryBusinessType());
+                    $subSubQuery->where("status", JobMessageModel::STATUS_ING);
+                    $subSubQuery->where("start_time", "<", date("Y-m-d H:i:s", time() - static::ingTimeOut()));//超过n小时的进行中 重新跑 可能线程被杀了或者资源耗尽了
+                });
+            }
         });
         return $query;
     }

@@ -61,6 +61,7 @@ trait FailJobMessageCommand
         $JobMessageModel->start_time = '';
         $JobMessageModel->end_time = '';
         $JobMessageModel->remark = '';
+        $JobMessageModel->delete_time = '';
         $JobMessageModel->save();
     }
 
