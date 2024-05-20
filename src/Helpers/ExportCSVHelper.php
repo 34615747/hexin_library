@@ -17,7 +17,7 @@ class ExportCSVHelper implements BasicExport
         if(!StringHelper::isContainsDate($path)){
             $path = $path . '/' . date('Y-m-d');
         }
-        $full_path = storage_path().$path;
+        $full_path = storage_path($path);
         if (!is_dir($full_path)) {
             mkdir($full_path, 0777, true);
         }
