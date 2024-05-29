@@ -104,7 +104,7 @@ class JobMessageModel extends Model
     public static function jobDetail()
     {
         return [
-//            self::BUSINESS_TYPE_EXAMPLE => ['max_fail_count'=>3,'retry_msgs'=>['*']],//*代表，任何错误消息都重试，否则指定内容['curl','500']
+//            self::BUSINESS_TYPE_EXAMPLE => ['max_fail_count'=>3,'retry_msgs'=>[['msg'=>'*','delay_time'=>3600]]],//*代表，任何错误消息都重试，否则指定内容['curl','500']
         ];
     }
 
@@ -373,17 +373,19 @@ class JobMessageModel extends Model
         //是否重试判断
         $retry_msgs = $this->getRetryMsgs();
         foreach ($retry_msgs as $retry_msg){
-            if((strpos($remark['msg'],$retry_msg) !== false) || ($retry_msg == '*')){
+            $retry_msg_msg = $retry_msg;
+            if($retry_msg['msg']??''){
+                $retry_msg_msg = $retry_msg['msg'];
+            }
+            if((strpos($remark['msg'],$retry_msg_msg) !== false) || ($retry_msg_msg == '*')){
                 $this->is_retry = 1;
+                $this->command_run_time = date('Y-m-d H:i:s',time()+($retry_msg['delay_time']??0));
                 break;
             }
         }
 
         if(!$this->isRetry()){
             $this->is_retry = 2;
-        }
-        if($this->is_retry == 1){
-            $this->command_run_time = date('Y-m-d H:i:s',time());
         }
         $this->delete_time = self::setFailDeleteTime();
         $this->save();
