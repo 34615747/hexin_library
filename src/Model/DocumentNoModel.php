@@ -83,18 +83,17 @@ abstract class DocumentNoModel extends Model
     }
 
     /**
-     * 单号前缀
-     * B20240608-
+     * 组合单号
      * @return string
      * @throws ApiException
      */
-    public function getPre($type)
+    public function combination($type,$increment_num)
     {
         $conf = static::getConfig($type);
-        $fun = $conf['prefix_fun'];
+        $fun = $conf['combination_fun'];
         $class = static::class;
         $class = (new \ReflectionClass($class))->newInstanceArgs([]); ;
-        return $class->$fun($type);
+        return $class->$fun($type,$increment_num);
     }
 
     /**
@@ -129,9 +128,8 @@ abstract class DocumentNoModel extends Model
 
         $increment_num = Cache::increment($RedisKey);
 
-        $pre = $this->getPre($type);
-        $new_serial_num = $this->getSerialNum($type,$increment_num);
-        $new_document_no = $pre.$new_serial_num;
+        list($pre,$new_document_no) = $this->combination($type,$increment_num);
+
         //判断是否存在
         if(static::where([
             'no'   => $new_document_no,
