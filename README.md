@@ -9,6 +9,7 @@
 7. 导出任务
 8. 工厂导出类
 9. 发送消息
+10. 生成单号
 
 安装：composer require hexin/library
 
