@@ -30,6 +30,7 @@ class ViewAuthHelper
     const VIEW_PURCHASE_ABOUT_AMOUNT = 15;//金额相关
     const VIEW_GOODS_INTERCOMPANY_PRICE = 16;//公司间定价
     const VIEW_FINANCE_COST = 17;//财务成本
+    const VIEW_CONSIGNEE_INFO = 18;//收件人信息
     public static $viewLabel = [
         self::VIEW_SUPPLIER_NAME => '供应商名称',
         self::VIEW_SUPPLIER_WANGWANG => '旺旺',
@@ -47,6 +48,7 @@ class ViewAuthHelper
         self::VIEW_PURCHASE_ABOUT_AMOUNT => '金额相关',
         self::VIEW_GOODS_INTERCOMPANY_PRICE => '公司间定价',
         self::VIEW_FINANCE_COST => '财务成本',
+        self::VIEW_CONSIGNEE_INFO => '收件人信息',
     ];
 
     /**
@@ -85,7 +87,7 @@ class ViewAuthHelper
     /**
      * 是否含有权限
      * User: lir 2020/12/25 11:19
-     * @return array
+     * @return bool
      */
     public static function isAuth($view_id,$uuid='')
     {
@@ -263,5 +265,31 @@ class ViewAuthHelper
             return $str;
         }
         return $hide;
+    }
+
+    /**
+     * Desc: 收件人信息
+     * Author: @zyouan
+     * Date: 2024/7/11
+     * @param $str
+     * @param string $hide
+     * @param string $uuid
+     * @return mixed|string
+     */
+    public static function viewConsigneeInfo($str,  $hide='***', $uuid='')
+    {
+        return self::isViewConsigneeInfoAuth($uuid) ? $str : $hide;
+    }
+
+    /**
+     * Desc: 是否有查看收件人信息权限
+     * Author: @zyouan
+     * Date: 2024/7/11
+     * @param string $uuid
+     * @return bool
+     */
+    public static function isViewConsigneeInfoAuth($uuid = '')
+    {
+        return self::isAuth(self::VIEW_CONSIGNEE_INFO, $uuid);
     }
 }
