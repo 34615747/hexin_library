@@ -256,7 +256,7 @@ class JobMessageModel extends Model
                 'is_now'             => $is_now,
                 'command_run_time'   => $command_run_time == '' ? date('Y-m-d H:i:s') : $command_run_time,
                 'fail_count'         => 0,
-                'is_retry'           => 1,
+                'is_retry'           => 2,
                 'status'             => self::STATUS_WAIT,
                 'status_name'        => static::$statusLabel[self::STATUS_WAIT]??'',
                 'create_time'        => date('Y-m-d H:i:s'),
