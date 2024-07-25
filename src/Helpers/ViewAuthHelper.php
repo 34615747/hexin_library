@@ -31,6 +31,7 @@ class ViewAuthHelper
     const VIEW_GOODS_INTERCOMPANY_PRICE = 16;//公司间定价
     const VIEW_FINANCE_COST = 17;//财务成本
     const VIEW_CONSIGNEE_INFO = 18;//收件人信息
+    const VIEW_CUSTOMS_PRICE = 19;//关务大表价格
     public static $viewLabel = [
         self::VIEW_SUPPLIER_NAME => '供应商名称',
         self::VIEW_SUPPLIER_WANGWANG => '旺旺',
@@ -49,6 +50,7 @@ class ViewAuthHelper
         self::VIEW_GOODS_INTERCOMPANY_PRICE => '公司间定价',
         self::VIEW_FINANCE_COST => '财务成本',
         self::VIEW_CONSIGNEE_INFO => '收件人信息',
+        self::VIEW_CUSTOMS_PRICE => '关务大表价格',
     ];
 
     /**
@@ -291,5 +293,21 @@ class ViewAuthHelper
     public static function isViewConsigneeInfoAuth($uuid = '')
     {
         return self::isAuth(self::VIEW_CONSIGNEE_INFO, $uuid);
+    }
+
+
+    /**
+     * 显示关务大表价格
+     * @param $str
+     * @param string $hide
+     * @param string $uuid
+     * @return mixed|string
+     */
+    public static function viewCustomsPrice($str,$hide='***',$uuid='')
+    {
+        if(self::isAuth(self::VIEW_CUSTOMS_PRICE,$uuid)){
+            return $str;
+        }
+        return $hide;
     }
 }
