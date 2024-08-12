@@ -122,4 +122,55 @@ class YarHelper
             ]
         ];
     }
+
+    /**
+     * 获取店铺数据
+     * @return array[]
+     */
+    public static function yarGetStore()
+    {
+        return [
+            'composer_hexin_site_StoreLogic_findAll' => [
+                'module' => 'hexin_site',
+                'service' => 'StoreLogic',
+                'method' => 'findAll',
+                'connect_timeout' => 60000,
+                'read_timeout' => 60000,
+            ]
+        ];
+    }
+
+    /**
+     * 获取用户数据
+     * @return array[]
+     */
+    public static function yarGetMember()
+    {
+        return [
+            'composer_hexin_site_MemberLogic_getAllMembers' => [
+                'module' => 'hexin_site',
+                'service' => 'MemberLogic',
+                'method' => 'getMember',
+                'connect_timeout' => 60000,
+                'read_timeout' => 60000,
+            ]
+        ];
+    }
+
+    /**
+     * 获取国家数据
+     * @return array[]
+     */
+    public static function yarGetCountry()
+    {
+        return [
+            'composer_hexin_site_CountryServices_getCountry' => [
+                'module' => 'hexin_site',
+                'service' => 'CountryServices',
+                'method' => 'getCountry',
+                'connect_timeout' => 60000,
+                'read_timeout' => 60000,
+            ]
+        ];
+    }
 }
