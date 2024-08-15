@@ -295,6 +295,21 @@ class JobMessageModel extends Model
         return false;
     }
 
+    /**
+     * 停止
+     */
+    public function stop($remark='')
+    {
+        if(is_array($remark)){
+            $remark = json_encode($remark,JSON_UNESCAPED_UNICODE);
+        }
+        $this->remark = $remark??'';;
+        $this->status = self::STATUS_STOP;
+        $this->status_name = $this->viewStatus();
+        $this->end_time = date('Y-m-d H:i:s');
+        $this->delete_time = self::setFailDeleteTime();
+        $this->save();
+    }
 
     /**
      * 进行中
