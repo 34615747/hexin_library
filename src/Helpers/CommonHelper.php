@@ -55,7 +55,7 @@ class CommonHelper
     }
 
     /**
-     * 获得uuid              
+     * 获得uuid
      * User: lir 2020/4/22 11:06
      * @return string
      */

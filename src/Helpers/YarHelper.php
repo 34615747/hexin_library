@@ -173,4 +173,38 @@ class YarHelper
             ]
         ];
     }
+
+    /**
+     * 获取品牌数据
+     * @return array[]
+     */
+    public static function yarGetBrand()
+    {
+        return [
+            'composer_hexin_site_BrandServices_getBrandByWhere' => [
+                'module' => 'hexin_site',
+                'service' => 'BrandServices',
+                'method' => 'getBrandByWhere',
+                'connect_timeout' => 60000,
+                'read_timeout' => 60000,
+            ]
+        ];
+    }
+
+    /**
+     * 获取公司数据
+     * @return array[]
+     */
+    public static function yarGetCompany()
+    {
+        return [
+            'composer_hexin_site_CompanyServices_getCompany' => [
+                'module' => 'hexin_site',
+                'service' => 'CompanyServices',
+                'method' => 'getCompany',
+                'connect_timeout' => 60000,
+                'read_timeout' => 60000,
+            ]
+        ];
+    }
 }
