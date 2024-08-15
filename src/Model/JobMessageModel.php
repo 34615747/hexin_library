@@ -296,7 +296,7 @@ class JobMessageModel extends Model
     }
 
     /**
-     * 停止
+     * 停止111
      */
     public function stop($remark='')
     {
