@@ -76,7 +76,6 @@ abstract class AbstractJobMessageFailRetry extends Command
     {
         $id = $this->argument('id');
         $query = $this->getJobMessage()->newQuery();
-        $query->where('is_retry',\Hexin\Library\Model\Model::TRUE);
         if ($id) {
             $query = $query->where('id', $id);
         }
@@ -85,6 +84,7 @@ abstract class AbstractJobMessageFailRetry extends Command
                 $subQuery->where(function (Builder $subSubQuery){
                     $subSubQuery->whereIn('business_type',static::failRetryBusinessType());
                     $subSubQuery->where('status', JobMessageModel::STATUS_FAIL);
+                    $subSubQuery->where('is_retry',\Hexin\Library\Model\Model::TRUE);
                 });
             }
             if(static::ingRetryBusinessType()){
