@@ -28,6 +28,33 @@ trait ExportDataTrait
         ini_set('memory_limit', $this->traitMemoryLimit());
         echo '开始导出，数量:' . count($ExportJobs) . PHP_EOL;
         foreach ($ExportJobs as $ExportJob) {
+            //获取锁，获取不到则退出,或休眠1秒再获取
+            $RedisKey = 'hexin_library:lock:export_data:'.($ExportJob['template_type']);
+            $Lock = new \Hexin\Library\Cache\Redis\Lock();
+            if(!$Lock->getLocalLock($RedisKey,300)){
+                sleep(1);
+                continue;
+            }
+
+            //读取1条待处理任务，无则退出
+            $params = [
+                'where'=>"id = ({$ExportJob['id']}) and handling_status=".ExportJobModel::HANDLING_STATUS_WAIT,
+            ];
+            $ErpExportTasks = ExportJobModel::getStorageExport($params,ExportJobModel::class);
+            if (!$ErpExportTasks) {
+                //释放锁
+                \Hexin\Library\Cache\Redis\Lock::releaseLock($RedisKey);
+                continue;
+            }
+
+            //状态改成进行中
+            $ExportJob['handling_status'] = ExportJobModel::HANDLING_STATUS_ING;
+            ExportJobModel::updateStorageExport($ExportJob,$ExportJobModelClassName);
+
+            //释放锁
+            \Hexin\Library\Cache\Redis\Lock::releaseLock($RedisKey);
+
+            //执行导出
             /**@var $ExportJob \Hexin\Library\Model\ExportJobModel */
             $userInfo = [
                 'uuid'=>$ExportJob['create_uuid'],

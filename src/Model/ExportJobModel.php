@@ -192,4 +192,26 @@ class ExportJobModel extends Model
         return [];
     }
 
+    /**
+     * 更新导出记录
+     * @return mixed
+     * @throws \Exception
+     */
+    public static function updateStorageExport($ExportJob,$ExportJobModelClassName='')
+    {
+        try {
+            if ($ExportJobModelClassName) {
+                $model = $ExportJobModelClassName::findOrFail($ExportJob['id']);
+                $model->fill($ExportJob);
+                $model->save();
+                return [];
+            }
+            $res = YarHelper::call($ExportJob,YarHelper::yarUpdateExpertConf());
+
+        } catch (\Exception $e) {
+            throw new \Exception($e->getMessage());
+        }
+        return [];
+    }
+
 }
