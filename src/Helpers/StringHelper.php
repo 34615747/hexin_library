@@ -258,4 +258,20 @@ class StringHelper
         }
         return false;
     }
+
+    /**
+     * 获取金额的小数位数
+     * @param $number
+     * @return int
+     */
+    public static function getDecimalPlaces($number)
+    {
+        $number = (string)$number; // 确保是字符串
+        $dotPos = strpos($number, '.');
+        if ($dotPos === false) {
+            return 0; // 没有小数点
+        }
+        return strlen($number) - $dotPos - 1;
+    }
+
 }
