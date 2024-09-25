@@ -40,7 +40,7 @@ trait ExportDataTrait
             $params = [
                 'where'=>"id = ({$ExportJob['id']}) and handling_status=".ExportJobModel::HANDLING_STATUS_WAIT,
             ];
-            $ErpExportTasks = ExportJobModel::getStorageExport($params,ExportJobModel::class);
+            $ErpExportTasks = ExportJobModel::getStorageExport($params,$ExportJobModelClassName);
             if (!$ErpExportTasks) {
                 //释放锁
                 \Hexin\Library\Cache\Redis\Lock::releaseLock($RedisKey);
