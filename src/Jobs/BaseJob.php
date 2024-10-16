@@ -95,7 +95,9 @@ class BaseJob implements ShouldQueue
             }
             $this->JobMessageModel = $JobMessageModel;
             if($JobMessageModel->status != $JobMessageModelName::STATUS_JOB){
-                echo '请选择队列中的队列:'.$JobMessageModel->_id.PHP_EOL;
+                if($this->is_cli) {
+                    echo '请选择队列中的队列:' . $JobMessageModel->_id . PHP_EOL;
+                }
                 return;
             }
 //            if($JobMessageModel->is_retry == 2){

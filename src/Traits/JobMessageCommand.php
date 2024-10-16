@@ -60,10 +60,9 @@ trait JobMessageCommand
 
     public function traitHandleJob($JobMessageModel)
     {
-        $JobMessageModel->status = JobMessageModel::STATUS_JOB;
-        $JobMessageModel->status_name = $JobMessageModel->viewStatus();
-        $JobMessageModel->save();
-        $JobMessageModel->insertJob($JobMessageModel);
+        /**@var $JobMessageModel \Hexin\Library\Model\JobMessageModel*/
+        $JobMessageModel->job();
+        $JobMessageModel->insertJob();
     }
 
     public function traitHandleBefore(JobMessageModel $JobMessageModel): bool

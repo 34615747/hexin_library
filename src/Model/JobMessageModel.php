@@ -165,6 +165,16 @@ class JobMessageModel extends Model
     }
 
     /**
+     * 队列中
+     */
+    public function job()
+    {
+        $this->status = JobMessageModel::STATUS_JOB;
+        $this->status_name = $this->viewStatus();
+        $this->save();
+    }
+
+    /**
      * 等待中
      */
     public function wait()
@@ -209,7 +219,7 @@ class JobMessageModel extends Model
 
         $JobMessageModel->params_md5 = md5($JobMessageModel->merchant_id.'#'.$business_type.'#'.md5(json_encode($data)));
 
-        if(static::isFilterRepeat($business_type)){
+        if(static::isFilterRepeat($business_type) && ($data['is_now_run_job']??2)==2){
             //队列中存在相同参数的队列
             if($existsModel = self::where('params_md5',$JobMessageModel->params_md5)->whereIn('status',[self::STATUS_WAIT,self::STATUS_JOB])->first()){
                 return $existsModel;
@@ -223,6 +233,13 @@ class JobMessageModel extends Model
         $JobMessageModel->is_retry = 2;
         $JobMessageModel->extend_params1 = $extend_params1;
         $JobMessageModel->extend_params2 = $extend_params2;
+        if(($data['is_now_run_job']??2) == 1){
+            //现在就执行队列 dispatchNow
+            $JobMessageModel->is_now = 1;
+            $JobMessageModel->job();
+            $JobMessageModel->insertJob();
+            return $JobMessageModel;
+        }
         $JobMessageModel->wait();
 
         return $JobMessageModel;
