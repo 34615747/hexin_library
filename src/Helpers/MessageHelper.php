@@ -21,16 +21,22 @@ class MessageHelper
         if(!$config){
             return;
         }
+        $config = $config[$level];
+        $res = true;
         switch ($msg_class){
             case 'dingding':
-                $config = $config[$level];
                 $dingTalk = new DingDingMessage($config['webhook'],DingDingMessage::MSG_TYPE_TEXT,$config['secret']);
                 $dingTalk->send([
                     'content' => $content,
                     'at'      => $config['mobiles']
                 ]);
-            break;
+                break;
+            case 'mail':
+                $mail = new \Hexin\Library\Helpers\MailHelper($config['relay_host'],  $config['user'], $config['pass'], $config['smtp_port'], $config['auth'], $config['is_ssl']);
+                $res = $mail->sendmail($params['to'], $params['from'], $params['subject'], $content);
+                break;
         }
+        return $res;
     }
 
 
