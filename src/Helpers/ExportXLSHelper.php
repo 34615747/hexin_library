@@ -38,7 +38,7 @@ class ExportXLSHelper implements BasicExport
      * @param $fileName //文件名
      * @param $path //保存路径
      */
-    public function __construct($fieldsArr, $fileName, $path = 'app/xls_excel_export')
+    public function __construct($fieldsArr, $fileName, $path = 'app/xls_excel_export', $sheetName = 'sheet1')
     {
         if(!StringHelper::isContainsDate($path)){
             $path = $path . '/' . date('Y-m-d');
@@ -57,7 +57,7 @@ class ExportXLSHelper implements BasicExport
         $this->filename = $fileName;
         $this->fieldsArr = $fieldsArr;
         $this->excel = new Excel($config);
-        $this->excel = $this->excel->fileName($fileName, 'sheet1');
+        $this->excel = $this->excel->fileName($fileName, $sheetName);
         $this->excel = $this->excel->header(array_values($fieldsArr));
     }
 
@@ -200,6 +200,17 @@ class ExportXLSHelper implements BasicExport
             default:
                 return $format::COLOR_WHITE;
         }
+    }
+
+    //选择页面
+    public function checkoutSheet($sheetName)
+    {
+        $this->excel->checkoutSheet($sheetName);
+    }
+    //新增页面
+    public function createSheet($sheetName)
+    {
+        $this->excel->addSheet($sheetName);
     }
 
     /**

@@ -11,11 +11,14 @@ class CountryHelper
      */
     public static function getProvince($params)
     {
+        $return = [
+            "province_code" => '', "province_name" => ''
+        ];
         if (empty($params['country_code']) || $params['country_code'] != 'US') {
-            return null;
+            return $return;
         }
         if (empty($params['postal_code']) && empty($params['province_code']) && empty($params['province_name'])) {
-            return null;
+            return $return;
         }
         $data = [
             ["min_postal_code" => "35004", "max_postal_code" => "36925", "province_code" => "AL", "province_name" => "Alabama"],
@@ -26,18 +29,18 @@ class CountryHelper
             ["min_postal_code" => "80001", "max_postal_code" => "81658", "province_code" => "CO", "province_name" => "Colorado"],
             ["min_postal_code" => "06001", "max_postal_code" => "06928", "province_code" => "CT", "province_name" => "Connecticut"],
             ["min_postal_code" => "19701", "max_postal_code" => "19980", "province_code" => "DE", "province_name" => "Delaware"],
-            ["min_postal_code" => "32004", "max_postal_code" => "34997", "province_code" => "FL", "province_name" => "Florida"],
+            ["min_postal_code" => "32004", "max_postal_code" => "34997", "province_code" => "FL", "province_name" => "Florida"],//
             ["min_postal_code" => "30002", "max_postal_code" => "39901", "province_code" => "GA", "province_name" => "Georgia"],
             ["min_postal_code" => "96701", "max_postal_code" => "96898", "province_code" => "HI", "province_name" => "Hawaii"],
-            ["min_postal_code" => "83201", "max_postal_code" => "83877", "province_code" => "ID", "province_name" => "Idaho"],
+            ["min_postal_code" => "83201", "max_postal_code" => "83877", "province_code" => "ID", "province_name" => "Idaho"],//
             ["min_postal_code" => "60001", "max_postal_code" => "62999", "province_code" => "IL", "province_name" => "Illinois"],
             ["min_postal_code" => "46001", "max_postal_code" => "47997", "province_code" => "IN", "province_name" => "Indiana"],
-            ["min_postal_code" => "50001", "max_postal_code" => "52809", "province_code" => "IA", "province_name" => "Iowa"],
+            ["min_postal_code" => "50001", "max_postal_code" => "52809", "province_code" => "IA", "province_name" => "Iowa"],//
             ["min_postal_code" => "66002", "max_postal_code" => "67954", "province_code" => "KS", "province_name" => "Kansas"],
             ["min_postal_code" => "40003", "max_postal_code" => "42788", "province_code" => "KY", "province_name" => "Kentucky"],
-            ["min_postal_code" => "70001", "max_postal_code" => "71497", "province_code" => "LA", "province_name" => "Louisiana"],
-            ["min_postal_code" => "03901", "max_postal_code" => "04992", "province_code" => "ME", "province_name" => "Maine"],
-            ["min_postal_code" => "20588", "max_postal_code" => "21930", "province_code" => "MD", "province_name" => "Maryland"],
+            ["min_postal_code" => "70001", "max_postal_code" => "71497", "province_code" => "LA", "province_name" => "Louisiana"],//
+            ["min_postal_code" => "03901", "max_postal_code" => "04992", "province_code" => "ME", "province_name" => "Maine"],//
+            ["min_postal_code" => "20588", "max_postal_code" => "21930", "province_code" => "MD", "province_name" => "Maryland"],//
             ["min_postal_code" => "01001", "max_postal_code" => "05544", "province_code" => "MA", "province_name" => "Massachusetts"],
             ["min_postal_code" => "48001", "max_postal_code" => "49971", "province_code" => "MI", "province_name" => "Michigan"],
             ["min_postal_code" => "55001", "max_postal_code" => "56763", "province_code" => "MN", "province_name" => "Minnesota"],
@@ -83,9 +86,19 @@ class CountryHelper
             $data = $data->where('province_name', ucwords($params['province_name']));
         }
         if (!empty($params['postal_code'])) {
+            $info = $data->where('min_postal_code', $params['postal_code'])
+                ->where('max_postal_code', $params['postal_code'])
+                ->first();
+            if ($info) {
+                $data = $data->where('min_postal_code', $params['postal_code'])
+                    ->where('max_postal_code', $params['postal_code']);
+            } else {
+                $data = $data->where('min_postal_code', '<=', $params['postal_code'])
+                    ->where('max_postal_code', '>=', $params['postal_code']);
+            }
             $data = $data->where('min_postal_code', '<=', $params['postal_code'])
                 ->where('max_postal_code', '>=', $params['postal_code']);
         }
-        return $data->first();
+        return $data ? $data->first() : $return;
     }
 }
