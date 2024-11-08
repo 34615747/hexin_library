@@ -108,7 +108,12 @@ class MailHelper
                 continue;
             }
 
-            if ($this->smtp_send($this->host_name, $mail_from, $rcpt_to, $header, $body)) {
+			if ($cc != "") {
+				$newHeader = str_replace("Cc: " . $to, "Cc: " . $rcpt_to, $header);
+			} else {
+				$newHeader = str_replace("To: " . $to, "To: " . $rcpt_to, $header);
+			}
+			if ($this->smtp_send($this->host_name, $mail_from, $rcpt_to, $newHeader, $body)) {
                 $this->log_write("E-mail has been sent to <" . $rcpt_to . ">\n");
             } else {
                 $this->log_write("Error: Cannot send email to <" . $rcpt_to . ">\n");

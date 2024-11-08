@@ -28,7 +28,7 @@ use Vtiful\Kernel\Excel;
  */
 class ExportXLSHelper implements BasicExport
 {
-    protected $excel;
+    public $excel;
     protected $fieldsArr, $filename;
 
     protected $path = 'app/xls_excel_export';

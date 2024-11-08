@@ -39,6 +39,33 @@ class MessageHelper
         return $res;
     }
 
-
+	/**
+	 * 发送markdown消息
+	 * @param $title 标题
+	 * @param $content 内容
+	 * @param $msg_class 消息类型
+	 * @param $level
+	 * @return true|void
+	 */
+	public static function sendMarkdown($title, $content, $msg_class, $level = 'error')
+	{
+		$config = config('message_notice.' . $msg_class, []);
+		if (!$config) {
+			return;
+		}
+		$config = $config[$level];
+		$res = true;
+		switch ($msg_class) {
+			case 'dingding':
+				$dingTalk = new DingDingMessage($config['webhook'], DingDingMessage::MSG_TYPE_MARKDOWN, $config['secret']);
+				$dingTalk->send([
+					'content' => $content,
+					'title'   => $title,
+					'at'      => $config['mobiles']
+				]);
+				break;
+		}
+		return $res;
+	}
 
 }
