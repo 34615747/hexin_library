@@ -32,9 +32,10 @@ class DingDingMessage
 
     public function text($data)
     {
+        $keyword = $data['keyword']??$this->keyword;
         return [
             'msgtype' => 'text',
-            'text'    => ['content' => !empty($data['content']) ? sprintf("%s\n%s", $this->keyword, $data['content']) : ''],
+            'text'    => ['content' => !empty($data['content']) ? sprintf("%s\n%s", $keyword, $data['content']) : ''],
             'at'      => ['atMobiles' => $data['at'] ?? []],
         ];
     }

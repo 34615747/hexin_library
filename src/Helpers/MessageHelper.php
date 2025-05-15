@@ -28,7 +28,8 @@ class MessageHelper
                 $dingTalk = new DingDingMessage($config['webhook'],DingDingMessage::MSG_TYPE_TEXT,$config['secret']);
                 $dingTalk->send([
                     'content' => $content,
-                    'at'      => $config['mobiles']
+                    'at'      => $config['mobiles'],
+                    'keyword'=>$config['keyword']??''
                 ]);
                 break;
             case 'mail':
