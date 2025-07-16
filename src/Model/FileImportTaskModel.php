@@ -2,6 +2,9 @@
 
 namespace Hexin\Library\Model;
 
+
+use Hexin\Library\Helpers\CommonHelper;
+
 abstract class FileImportTaskModel extends Model
 {
     public $table = 'file_import_task';
@@ -40,5 +43,77 @@ abstract class FileImportTaskModel extends Model
         self::HANDLE_STATUS_FINNISH_ALL => "业务全部完成",
     ];
 
-    const BUSINESS_TYPE_SHOPIFY_TAX_IMPORT = 1; //shopify 税表导入
+    /**
+     * 获取查询条件
+     * @param $query
+     * @param array $params
+     * @return mixed
+     */
+    public static function getQueryConditions($query,$params = [])
+    {
+        if($params['handle_status']??''){
+            $query->where('handle_status',$params['handle_status']);
+        }
+        if($params['business_type']??''){
+            $query->where('business_type',$params['business_type']);
+        }
+        return $query;
+    }
+
+
+    /**
+     * 添加数据
+     * @param $data
+     */
+    public static function addItem($data){
+        $saveData = [];
+        $saveData['business_type'] = intval($data['business_type']);
+        $saveData['handle_status'] = self::HANDLE_STATUS_TODO;
+        $saveData['admin_name'] =  CommonHelper::getUserName();
+        $saveData['admin_uuid'] =  CommonHelper::getUUid();
+        $saveData['file_size'] = $data['size']??0;
+        $saveData['merchant_id'] = $data['merchant_id'];
+        $saveData['original_file_name'] = $data['original_name']??'';
+        $saveData['save_file_path'] = $data['save_file_path'];
+        $saveData['save_file_name'] = $data['save_file_name'];
+        $saveData['class_name'] = $data['class_name'];
+        $saveData['method'] = $data['method'];
+        $saveData['remark'] = addslashes($data['remark'] ?? "");
+        $saveData['create_time'] = date("Y-m-d H:i:s");
+        $saveData['update_time'] = date("Y-m-d H:i:s");
+        if (!empty($data['related_condition1'])){
+            if (is_array($data['related_condition1'])){
+                $saveData['related_condition1'] = json_encode($data['related_condition1']);
+            }else{
+                $saveData['related_condition1'] = $data['related_condition1'];
+            }
+        }
+        if (!empty($data['related_condition2'])){
+            if (is_array($data['related_condition2'])){
+                $saveData['related_condition2'] = json_encode($data['related_condition2']);
+            }else{
+                $saveData['related_condition2'] = $data['related_condition2'];
+            }
+        }
+        if (!empty($data['related_condition3'])){
+            if (is_array($data['related_condition3'])){
+                $saveData['related_condition3'] = json_encode($data['related_condition3']);
+            }else{
+                $saveData['related_condition3'] = $data['related_condition3'];
+            }
+        }
+        return self::insert($saveData);
+    }
+
+    /**
+     * 是否支持的格式
+     */
+    public static function isCanExt($file_url,$exts=['xlsx', 'xlsm', "xls"])
+    {
+        $file_path_info = pathinfo($file_url);
+        if (empty($file_path_info['extension']) || !in_array($file_path_info['extension'], $exts)) {
+            return false;
+        }
+        return true;
+    }
 }
