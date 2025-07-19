@@ -279,10 +279,12 @@ class BaseImport extends MultipleSheetImport implements ToCollection, WithStartR
             $insert_data[] = $this->formatAddData($data);
         }
 
-        $res = $this->batchAddData($insert_data);
-        self::$success_count += $res;
+        $res = 0;
+        if($this->isBatchAddData($insert_data)){
+            $res = $this->batchAddData($insert_data);
+        }
 
-        //记录当前分块的行号
+        self::$success_count += $res;
         self::$total_count += $collection->count();
 
         return true;
@@ -296,6 +298,16 @@ class BaseImport extends MultipleSheetImport implements ToCollection, WithStartR
     public function getModel($data = [])
     {
         return null;
+    }
+
+    /**
+     * 是否批量插入数据
+     * @param array $insert_data
+     * @return bool
+     */
+    public function isBatchAddData($insert_data = [])
+    {
+        return true;
     }
 
     /**
