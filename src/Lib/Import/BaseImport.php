@@ -36,7 +36,7 @@ class BaseImport extends MultipleSheetImport implements ToCollection, WithStartR
      * 分块行数
      * @var int
      */
-    protected $chunk_size = 10;
+    protected $chunk_size = 5000;
 
     /**
      * 批量插入数
