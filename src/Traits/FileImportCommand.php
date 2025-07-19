@@ -71,7 +71,7 @@ trait FileImportCommand
                    $fileModel->save();
                } catch (\Throwable $e) {
                    $fileModel->handle_status = FileImportTaskModel::HANDLE_STATUS_IMPORT_FAIL;
-                   $fileModel->fail_msg = json_encode([$e->getMessage()]);
+                   $fileModel->fail_msg = $e->getMessage();
                    $fileModel->save();
                    self::traitInfo(date("Y-m-d H:i:s") . " 处理文件-{$fileInfo['id']}:" . $fileInfo['save_file_name'] . " 异常：" . $e->getMessage());
                }
