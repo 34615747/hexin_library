@@ -96,6 +96,9 @@ class BaseImport extends MultipleSheetImport implements ToCollection, WithStartR
      */
     public function __construct($request = [])
     {
+        static::$success_count = 0;
+        static::$total_count = 0;
+        static::$errorDetails = [];
         $this->importTaskInfo = $request['importTaskInfo'] ?? null;
     }
 

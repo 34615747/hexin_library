@@ -43,6 +43,21 @@ abstract class FileImportTaskModel extends Model
         self::HANDLE_STATUS_FINNISH_ALL => "业务全部完成",
     ];
 
+    public function viewHandleStatusText()
+    {
+        return static::HANDLE_STATUS_DESC[$this->handle_status]??'';
+    }
+
+    public function viewImportStartTime()
+    {
+        return $this->import_start_time ? date('Y-m-d H:i:s',$this->import_start_time) : '';
+    }
+
+    public function viewImportEndTime()
+    {
+        return $this->import_end_time ? date('Y-m-d H:i:s',$this->import_end_time) : '';
+    }
+
     /**
      * 获取查询条件
      * @param $query
