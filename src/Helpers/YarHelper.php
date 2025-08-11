@@ -207,4 +207,21 @@ class YarHelper
             ]
         ];
     }
+
+    /**
+     * 上传文件
+     * @return array[]
+     */
+    public static function yarUploadFile()
+    {
+        return [
+            'composer_image_system_default_imageServices_uploadFile' => [
+                'module' => 'image_system_default',
+                'service' => 'imageServices',
+                'method' => 'uploadFile',
+                'connect_timeout' => 60000,
+                'read_timeout' => 60000,
+            ]
+        ];
+    }
 }
