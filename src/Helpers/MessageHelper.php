@@ -1,6 +1,7 @@
 <?php
 namespace Hexin\Library\Helpers;
 use Hexin\Library\Lib\DingTalk\DingDingMessage;
+use Hexin\Library\Lib\Feishu\FeishuMessage;
 
 /**
  * Created by PhpStorm.
@@ -35,6 +36,12 @@ class MessageHelper
             case 'mail':
                 $mail = new \Hexin\Library\Helpers\MailHelper($config['relay_host'],  $config['user'], $config['pass'], $config['smtp_port'], $config['auth'], $config['is_ssl']);
                 $res = $mail->sendmail($params['to'], $params['from'], $params['subject'], $content);
+                break;
+            case 'feishu':
+                $feishuMessage = new FeishuMessage($config['webhook'],FeishuMessage::MSG_TYPE_TEXT,$config['secret'] ?? '');
+                $feishuMessage->send([
+                    'content' => $content,
+                ]);
                 break;
         }
         return $res;
