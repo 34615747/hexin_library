@@ -18,7 +18,7 @@ abstract class AbstractExport
     protected $exportHelper;
 
     const FORMAT_FLOAT = "float";
-    const FORMAT_INT = "int";
+    const FORMAT_INT = "int"; 
 
     const EXPORT_EXCEL = "excel";
     const EXPORT_CSV = "csv";
