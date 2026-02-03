@@ -80,7 +80,7 @@ abstract class FileImportTaskModel extends Model
      * 添加数据
      * @param $data
      */
-    public static function addItem($data){
+    public function addItem($data){
         $saveData = [];
         $saveData['business_type'] = intval($data['business_type']);
         $saveData['handle_status'] = self::HANDLE_STATUS_TODO;
