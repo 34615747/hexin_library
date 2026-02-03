@@ -15,6 +15,7 @@ class SpClient
         //Europe
         'ES' => ['Europe', 'A1RKKUPIHCS9HS', 'https://www.amazon.es/', '€','EUR'],    //'Spain'
         'GB' => ['Europe', 'A1F83G8C2ARO7P', 'https://www.amazon.co.uk/', '￡','GBP'],    //'United Kingdom'
+        'IE' => ['Europe', 'A28R8C7NBKEWEA', 'https://www.amazon.co.ie/', '€','EUR'],    //'United Kingdom'
         'FR' => ['Europe', 'A13V1IB3VIYZZH', 'https://www.amazon.fr/', '€','EUR'],    //'France'
         'NL' => ['Europe', 'A1805IZSGTT6HS', 'https://www.amazon.nl/', '€','EUR'],    //'Netherlands'
         'DE' => ['Europe', 'A1PA6795UKMFR9', 'https://www.amazon.de/', '€','EUR'],    //'Germany'
