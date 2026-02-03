@@ -43,6 +43,8 @@ abstract class FileImportTaskModel extends Model
         self::HANDLE_STATUS_FINNISH_ALL => "业务全部完成",
     ];
 
+    const BUSINESS_TYPE_SHOPIFY_TAX_IMPORT = 1; //shopify 税表导入
+
     public function viewHandleStatusText()
     {
         return static::HANDLE_STATUS_DESC[$this->handle_status]??'';
