@@ -28,13 +28,14 @@ public  function setBlackList(array $black_list):void
      * @param $route
      * @param $module
      */
-    public function setUserRequestLog($route,$method,$module = '')
+    public function setUserRequestLog($route,$method,$uuid,$uname,$module = '')
     {
         if(in_array($route,$this->blak_list)) {
         return ;
         }
         $route_menu = [];
-        $route_menu_file =  file_get_contents(env('STAT_URL').'/route_menu.json');
+        $menu_url =  !empty(env('STAT_URL')) ? env('STAT_URL') : env('OLAP_URL');
+        $route_menu_file =  file_get_contents($menu_url.'/route_menu.json');
             if(!empty($route_menu_file)) {
                 $route_menu = json_decode($route_menu_file,true);
             }
@@ -43,8 +44,8 @@ public  function setBlackList(array $black_list):void
         $data = [
             'route' => $route,
             'method' => $method,
-            'uuid' => config('userInfo')['uuid'] ?? '',
-            'uname' => config('userInfo')['member_name'] ?? '',
+            'uuid' => $uuid,
+            'uname' => $uname,
             'module' => $module ? $module : ($menu_arr ? $menu_arr['module'] : ''),
             'action' => $menu_arr ? $menu_arr['action'] : $route,
             'create_time' => date('Y-m-d H:i:s'),
